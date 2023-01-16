@@ -316,4 +316,77 @@ class WpTemplateHelper implements \ArrayAccess
     {
         return self::maybeAnchorTagStatic($this->getNested($key), $atts, $alternative_tag);
     }
+
+    public function link(string $key, string $text, $atts = '')
+    {
+        $link = $this->getNested($key);
+        if (!is_array($link) && !is_string($link)) {
+            return;
+        }
+
+        if (is_string($link)) {
+            ?>
+            <a href="<?php
+            \esc_url($link); ?>"><?php
+                echo $text; ?></a>
+            <?php
+            return;
+        }
+
+        // is object
+        $url = $link['url'] ?? null;
+
+        if (!$url) {
+            return;
+        }
+
+        $target = $link['target'] ?? '_self';
+        if (is_array($atts)) {
+            $atts = self::_attributes($atts);
+        }
+        ?>
+        <a href="<?php
+        echo \esc_url($url); ?>" target="<?php
+        echo \esc_attr($target); ?>" <?php
+        $atts; ?>><?php
+            echo $text; ?></a>
+
+        <?php
+    }
+
+    public function img(string $key, $size = 'full', $atts = '')
+    {
+        $img = $this->getNested($key);
+        if (!$img) {
+            return;
+        }
+
+        if (is_numeric($img)) {
+            $id = $img;
+            echo \wp_get_attachment_img($id, $size, false, $atts);
+            return;
+        } elseif (is_array($img)) {
+            $url = $img['url'] ?? null;
+            $alt = $img['alt'] ?? (is_array($atts) ? ($atts['alt'] ?? '') : '');
+        } elseif (is_string($img)) {
+            $url = $img;
+            $alt = is_array($atts) ? ($atts['alt'] ?? '') : '';
+        }
+
+        if (!$url) {
+            return;
+        }
+
+        if (is_array($atts)) {
+            unset($atts['alt']);
+            $atts = self::_attributes($atts);
+        }
+        ?>
+        <img src="<?php
+        echo \esc_url($img); ?>" alt="<?php
+        echo \esc_attr($alt); ?>" <?php
+        echo $atts; ?>>
+        <?php
+    }
+
 }
