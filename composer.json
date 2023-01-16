@@ -1,5 +1,6 @@
 {
     "name": "lxbdr/wp-template-helper",
+    "description": "Wrap a data array in a helper class for easy output with WordPress escaping functions.",
     "type": "library",
     "autoload": {
         "psr-4": {
@@ -12,5 +13,7 @@
             "email": "hello@alexanderbader.de"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=7.4"
+    }
 }
