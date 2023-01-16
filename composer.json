@@ -1,6 +1,8 @@
 {
     "name": "lxbdr/wp-template-helper",
-    "description": "Wrap a data array in a helper class for easy output with WordPress escaping functions.",
+    "description": "Data wrapper for easy output with WordPress escaping functions.",
+    "minimum-stability": "dev",
+    "homepage": "https://github.com/lxbdr/wp-template-helper",
     "type": "library",
     "autoload": {
         "psr-4": {
