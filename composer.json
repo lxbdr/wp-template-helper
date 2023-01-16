@@ -1,0 +1,16 @@
+{
+    "name": "lxbdr/wp-template-helper",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Lxbdr\\WpTemplateHelper\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alexander Bader",
+            "email": "hello@alexanderbader.de"
+        }
+    ],
+    "require": {}
+}
