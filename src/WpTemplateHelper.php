@@ -187,11 +187,16 @@ class WpTemplateHelper implements \ArrayAccess {
 	 */
 	protected static function proxySharedCalls( $name, $arguments ) {
 		$method = strpos( $name, '_' ) === 0 ?
-			'static' . ucfirst( $name )
-			: '_static' . ltrim( ucfirst( $name ), '_' );
+			'_static' . ltrim( ucfirst( $name ), '_' )
+			: 'static' . ucfirst( $name );
 
-		if ( is_callable( [ new static(), $method ] ) ) {
-			return call_user_func_array( [ new static(), $method ], $arguments );
+
+		$callback = [ static::class, $method ];
+
+		if ( method_exists( static::class, $method ) && is_callable( $callback ) ) {
+			return call_user_func_array( $callback, $arguments );
+		} else {
+			throw new \BadMethodCallException( "Method $name does not exist." );
 		}
 
 	}
@@ -358,11 +363,9 @@ class WpTemplateHelper implements \ArrayAccess {
 			$atts = self::_attributes( $atts );
 		}
 		?>
-		<a href="<?php
-		echo \esc_url( $url ); ?>" target="<?php
-		echo \esc_attr( $target ); ?>" <?php
-		$atts; ?>><?php
-			echo $text; ?></a>
+		<a href="<?php echo \esc_url( $url ); ?>" target="<?php echo \esc_attr( $target ); ?>" <?php echo $atts; ?>>
+			<?php echo $text; ?>
+		</a>
 
 		<?php
 	}
@@ -400,6 +403,24 @@ class WpTemplateHelper implements \ArrayAccess {
 		echo \esc_attr( $alt ); ?>" <?php
 		echo $atts; ?>>
 		<?php
+	}
+
+	public function heading( $tag, $content, $attributes = [] ) {
+		if ( is_array( $attributes ) ) {
+			$attsString = $this->_attributes( $attributes );
+		} else if ( is_string( $attributes ) ) {
+			$attsString = $attributes;
+		} else {
+			$attsString = '';
+		}
+
+		// check if tag is valid
+		$validTags = [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'span' ];
+		if ( ! in_array( $tag, $validTags ) ) {
+			$tag = 'div';
+		}
+
+		echo "<{$tag} {$attsString}>$content</{$tag}>";
 	}
 
 }
