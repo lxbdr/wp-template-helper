@@ -336,13 +336,13 @@ class WpTemplateHelper implements \ArrayAccess {
 		};
 	}
 
-	public function link( string $key, string $text, $atts = '' ) {
+	public function link( string $key, $text = null, $atts = '' ) {
 		$link = $this->getNested( $key );
 		if ( ! is_array( $link ) && ! is_string( $link ) ) {
 			return;
 		}
 
-		if ( is_string( $link ) ) {
+		if ( is_string( $link ) && $text !== null ) {
 			?>
 			<a href="<?php
 			\esc_url( $link ); ?>"><?php
@@ -352,9 +352,10 @@ class WpTemplateHelper implements \ArrayAccess {
 		}
 
 		// is object
-		$url = $link['url'] ?? null;
+		$url  = $link['url'] ?? null;
+		$text = $link['title'] ?? $text;
 
-		if ( ! $url ) {
+		if ( ! $url || $text === null ) {
 			return;
 		}
 
