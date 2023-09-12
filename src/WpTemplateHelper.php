@@ -25,6 +25,10 @@ interface WpTemplateHelperElement {
  * @method string _attributes( array $arr )
  * @method static WpTemplateHelperElement maybeAnchorTag( string $link, $atts, string $alternative_tag )
  * @method WpTemplateHelperElement maybeAnchorTag( string $link, $atts, string $alternative_tag )
+ * @method static void withLineBreaks( array $lines, string $separator )
+ * @method static string _withLineBreaks( array $lines, string $separator )
+ * @method void withLineBreaks( array $lines, string $separator )
+ * @method string _withLineBreaks( array $lines, string $separator )
  */
 class WpTemplateHelper implements \ArrayAccess {
 
@@ -379,7 +383,7 @@ class WpTemplateHelper implements \ArrayAccess {
 	 *
 	 * @return void
 	 */
-	public function _staticWithLineBreaks( $lines = [], $separator = '<br/>' ) {
+	protected function _staticWithLineBreaks( $lines = [], $separator = '<br/>' ) {
 		$filtered = array_filter( $lines );
 
 		echo implode( $separator, $filtered );
@@ -393,7 +397,7 @@ class WpTemplateHelper implements \ArrayAccess {
 	 *
 	 * @return void
 	 */
-	public function staticWithLineBreaks( $lines = [], $separator = '<br/>' ) {
+	protected function staticWithLineBreaks( $lines = [], $separator = '<br/>' ) {
 		echo static::_staticWithLineBreaks( $lines, $separator );
 	}
 
