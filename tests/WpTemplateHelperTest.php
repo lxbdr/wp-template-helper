@@ -58,4 +58,70 @@ class WpTemplateHelperTest extends TestCase {
 
 		$this->assertEquals( 'hello world', $t->get( 'foo.bar.baz' ) );
 	}
+
+	public function testItOutputsImgFromId() {
+
+		$id = 123;
+
+		$t = new WpTemplateHelper( [
+			'img' => $id
+		] );
+
+		$mock_output = '<img src="mock.jpg">';
+
+		WP_Mock::userFunction( 'wp_get_attachment_image' )
+		       ->withSomeOfArgs( $id )
+		       ->andReturn( $mock_output );
+//		       ->with( $id );
+
+		ob_start();
+
+		$t->img( 'img' );
+
+		$output = ob_get_clean();
+
+		$this->assertNotEmpty( $output );
+		$this->assertStringContainsString( $mock_output, $output );
+
+	}
+
+	public function testItOutputsImgFromArray() {
+		$url = 'https://picsum.photos/300/300.jpg';
+		$alt = 'lorem';
+
+		$t = new WpTemplateHelper( [
+			'img' => [
+				'id'  => 123,
+				'url' => $url,
+				'alt' => $alt,
+			]
+		] );
+
+		ob_start();
+
+		$t->img( 'img' );
+
+		$output = ob_get_clean();
+
+		$this->assertNotEmpty( $output );
+		$this->assertStringContainsString( $url, $output );
+		$this->assertStringContainsString( $alt, $output );
+	}
+
+	public function testItOutputsImgFromUrl() {
+		$url = 'https://picsum.photos/300/300.jpg';
+
+		$t = new WpTemplateHelper( [
+			'img' => $url
+		] );
+
+		ob_start();
+
+		$t->img( 'img' );
+
+		$output = ob_get_clean();
+
+		$this->assertNotEmpty( $output );
+		$this->assertStringContainsString( $url, $output );
+	}
 }

@@ -371,6 +371,33 @@ class WpTemplateHelper implements \ArrayAccess {
 		<?php
 	}
 
+	/**
+	 * Filters empty lines and output with linebreaks
+	 *
+	 * @param array $lines
+	 * @param string $separator
+	 *
+	 * @return void
+	 */
+	public function _staticWithLineBreaks( $lines = [], $separator = '<br/>' ) {
+		$filtered = array_filter( $lines );
+
+		echo implode( $separator, $filtered );
+	}
+
+	/**
+	 * Filters empty lines and output with linebreaks
+	 *
+	 * @param $lines
+	 * @param $separator
+	 *
+	 * @return void
+	 */
+	public function staticWithLineBreaks( $lines = [], $separator = '<br/>' ) {
+		echo static::_staticWithLineBreaks( $lines, $separator );
+	}
+
+
 	public function img( string $key, $size = 'full', $atts = '' ) {
 		$img = $this->getNested( $key );
 		if ( ! $img ) {
@@ -400,7 +427,7 @@ class WpTemplateHelper implements \ArrayAccess {
 		}
 		?>
 		<img src="<?php
-		echo \esc_url( $img ); ?>" alt="<?php
+		echo \esc_url( $url ); ?>" alt="<?php
 		echo \esc_attr( $alt ); ?>" <?php
 		echo $atts; ?>>
 		<?php
