@@ -213,12 +213,12 @@ class WpTemplateHelper implements \ArrayAccess {
 		return static::proxySharedCalls( $name, $arguments );
 	}
 
-	protected static function _staticClsx( ...$arguments ) {
-		if ( is_string( $arguments ) ) {
-			return $arguments;
-		} elseif ( is_array( $arguments ) ) {
+	protected static function clsxInner( $value ) {
+		if ( is_string( $value ) ) {
+			return $value;
+		} elseif ( is_array( $value ) ) {
 			$tmp = [];
-			foreach ( $arguments as $k => $v ) {
+			foreach ( $value as $k => $v ) {
 				if ( is_numeric( $k ) ) {
 					// non-associative array
 					// recurse each value
@@ -236,6 +236,15 @@ class WpTemplateHelper implements \ArrayAccess {
 		}
 
 		return '';
+	}
+
+	protected static function _staticClsx( ...$arguments ) {
+		$tmp = [];
+		foreach ( $arguments as $k => $v ) {
+			$tmp[] = static::clsxInner( $v );
+		}
+
+		return implode( ' ', array_filter( $tmp ) );
 	}
 
 
