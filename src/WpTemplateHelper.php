@@ -213,12 +213,12 @@ class WpTemplateHelper implements \ArrayAccess {
 		return static::proxySharedCalls( $name, $arguments );
 	}
 
-	protected static function _staticClsx( $value ) {
-		if ( is_string( $value ) ) {
-			return $value;
-		} elseif ( is_array( $value ) ) {
+	protected static function _staticClsx( ...$arguments ) {
+		if ( is_string( $arguments ) ) {
+			return $arguments;
+		} elseif ( is_array( $arguments ) ) {
 			$tmp = [];
-			foreach ( $value as $k => $v ) {
+			foreach ( $arguments as $k => $v ) {
 				if ( is_numeric( $k ) ) {
 					// non-associative array
 					// recurse each value
