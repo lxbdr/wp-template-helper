@@ -423,9 +423,8 @@ class WpTemplateHelper implements \ArrayAccess {
 
 		if ( is_numeric( $img ) ) {
 			$id = $img;
-			echo \wp_get_attachment_image( $id, $size, false, $atts );
 
-			return;
+			return \wp_get_attachment_image( $id, $size, false, $atts );
 		} elseif ( is_array( $img ) ) {
 			$url = $img['url'] ?? null;
 			$alt = $img['alt'] ?? ( is_array( $atts ) ? ( $atts['alt'] ?? '' ) : '' );
