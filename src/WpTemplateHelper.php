@@ -61,12 +61,14 @@ class WpTemplateHelper implements \ArrayAccess {
 	/**
 	 * @param $key
 	 *
-	 * @return mixed|string value or empty string
+	 * @return mixed value or empty string
 	 */
+    #[\ReturnTypeWillChange]
 	public function get( $key ) {
 		return $this->getNested( $key ) ?? '';
 	}
 
+    #[\ReturnTypeWillChange]
 	public function set( string $key, $value ) {
 		if ( strpos( $key, '.' ) !== false ) {
 			throw new \Exception( "set nested key is not supported yet." );
@@ -84,7 +86,8 @@ class WpTemplateHelper implements \ArrayAccess {
 	 *
 	 * @return mixed
 	 */
-	protected function getNested( string $key, string $separator = '.' ) {
+    #[\ReturnTypeWillChange]
+    protected function getNested( string $key, string $separator = '.' ) {
 		return array_reduce(
 			explode( $separator, $key ),
 			function ( $agg, $value ) {
@@ -159,6 +162,7 @@ class WpTemplateHelper implements \ArrayAccess {
 		$this->html( $key );
 	}
 
+    #[\ReturnTypeWillChange]
 	public function offsetSet( $offset, $value ): void {
 		if ( is_null( $offset ) ) {
 			$this->data[] = $value;
@@ -167,14 +171,17 @@ class WpTemplateHelper implements \ArrayAccess {
 		}
 	}
 
+    #[\ReturnTypeWillChange]
 	public function offsetExists( $offset ): bool {
 		return ! ! $this->getNested( $offset );
 	}
 
+    #[\ReturnTypeWillChange]
 	public function offsetUnset( $offset ): void {
 		unset( $this->data[ $offset ] );
 	}
 
+    #[\ReturnTypeWillChange]
 	public function offsetGet( $offset ) {
 		return $this->getNested( $offset );
 	}
