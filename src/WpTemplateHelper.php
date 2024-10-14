@@ -32,10 +32,15 @@ interface WpTemplateHelperElement {
  */
 class WpTemplateHelper implements \ArrayAccess {
 
+    protected string $idPrefix = '';
+
 	protected array $data = [];
 
 	public function __construct( array $data = [] ) {
 		$this->data = $data;
+
+//        Generate a short random string to use as prefix for unique id
+        $this->regenerateIdPrefix();
 	}
 
 	public static function fromObject( object $data ): WpTemplateHelper {
@@ -57,6 +62,26 @@ class WpTemplateHelper implements \ArrayAccess {
 	public function empty( string $key ): bool {
 		return empty( $this->getNested( $key ) );
 	}
+
+    public function id(string $id): void
+    {
+        echo $this->_id($id);
+    }
+
+    public function _id(string $id): string
+    {
+        return \esc_attr($this->idPrefix . $id);
+    }
+
+    public function getIdPrefix(): string
+    {
+        return $this->idPrefix;
+    }
+
+    public function regenerateIdPrefix(): void
+    {
+        $this->idPrefix = substr(md5(uniqid('', true)), 0, 5) . '-';
+    }
 
 	/**
 	 * @param $key
