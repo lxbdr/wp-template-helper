@@ -135,11 +135,13 @@ class WpTemplateHelper implements \ArrayAccess {
 		return $this->data;
 	}
 
-	public function setData( array $data ) {
+	public function setData( array $data ): void
+    {
 		$this->data = $data;
 	}
 
-	public function dump( $key = null ) {
+	public function dump( $key = null ): void
+    {
 		if ( ! $key ) {
 			var_dump( $this->data );
 
