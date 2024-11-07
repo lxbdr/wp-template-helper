@@ -285,7 +285,7 @@ class WpTemplateHelper implements \ArrayAccess {
 		foreach ( $arr as $prop => $value ) {
 			// strict check empty string and false
 			if ( $value !== '' && $value !== false ) {
-				$styles[] = "${prop}: ${value};";
+				$styles[] = "{$prop}: {$value};";
 			}
 		}
 
@@ -304,7 +304,7 @@ class WpTemplateHelper implements \ArrayAccess {
 
 		foreach ( $arr as $att => $value ) {
 			$value  = \esc_attr( $value );
-			$atts[] = "${att}=\"${value}\"";
+			$atts[] = "{$att}=\"{$value}\"";
 		}
 
 		return implode( " ", $atts );
