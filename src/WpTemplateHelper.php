@@ -2,14 +2,6 @@
 
 namespace Lxbdr\WpTemplateHelper;
 
-interface WpTemplateHelperElement {
-
-	public function open();
-
-	public function close();
-
-}
-
 /**
  * @method static void clsx( ...$arguments )
  * @method static string _clsx( ...$arguments )
@@ -23,8 +15,8 @@ interface WpTemplateHelperElement {
  * @method static string _attributes( array $arr )
  * @method void attributes( array $arr )
  * @method string _attributes( array $arr )
- * @method static WpTemplateHelperElement maybeAnchorTag( string $link, $atts, string $alternative_tag )
- * @method WpTemplateHelperElement maybeAnchorTag( string $link, $atts, string $alternative_tag )
+ * @method static Interfaces\WpTemplateHelperElement maybeAnchorTag(string $link, $atts, string $alternative_tag )
+ * @method Interfaces\WpTemplateHelperElement maybeAnchorTag(string $link, $atts, string $alternative_tag )
  * @method static void withLineBreaks( array $lines = [], string $separator = '<br/>' )
  * @method static string _withLineBreaks( array $lines = [], string $separator = '<br/>' )
  * @method void withLineBreaks( array $lines = [], string $separator = '<br/>' )
@@ -331,7 +323,7 @@ class WpTemplateHelper implements \ArrayAccess {
 	 * @param string $atts
 	 * @param string $alternative_tag
 	 *
-	 * @return WpTemplateHelperElement
+	 * @return \Lxbdr\WpTemplateHelper\Interfaces\WpTemplateHelperElement
 	 */
 	public static function staticMaybeAnchorTag( string $link, $atts = '', string $alternative_tag = 'div' ) {
 		if ( is_array( $atts ) ) {
@@ -343,7 +335,7 @@ class WpTemplateHelper implements \ArrayAccess {
 		if ( $is_link ) {
 			$link = \esc_url( $link );
 
-			return new class( $link, $atts ) implements WpTemplateHelperElement {
+			return new class( $link, $atts ) implements Interfaces\WpTemplateHelperElement {
 				protected $link;
 				protected $atts;
 
@@ -362,7 +354,7 @@ class WpTemplateHelper implements \ArrayAccess {
 			};
 		}
 
-		return new class( $atts, $alternative_tag ) implements WpTemplateHelperElement {
+		return new class( $atts, $alternative_tag ) implements Interfaces\WpTemplateHelperElement {
 			protected $atts;
 			protected $tag;
 
