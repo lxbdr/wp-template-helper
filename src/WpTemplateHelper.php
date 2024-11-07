@@ -43,8 +43,8 @@ class WpTemplateHelper implements \ArrayAccess {
 		return $this->data;
 	}
 
-	public function has( string $key ): bool {
-		return $this->getNested( $key ) !== null;
+	public function has( string $key, string $separator = '.' ): bool {
+		return $this->issetNested( $key, $separator );
 	}
 
 	public function notEmpty( string $key ): bool {
@@ -81,13 +81,15 @@ class WpTemplateHelper implements \ArrayAccess {
 	 * @return mixed value or empty string
 	 */
     #[\ReturnTypeWillChange]
-	public function get( $key ) {
+	public function get( $key ): mixed
+    {
 		return $this->getNested( $key ) ?? '';
 	}
 
     #[\ReturnTypeWillChange]
-	public function set( string $key, $value ) {
-		if ( strpos( $key, '.' ) !== false ) {
+	public function set( string $key, $value ): void
+    {
+		if (str_contains($key, '.')) {
 			throw new \Exception( "set nested key is not supported yet." );
 		}
 		$this->data[ $key ] = $value;
@@ -113,6 +115,21 @@ class WpTemplateHelper implements \ArrayAccess {
 			$this->data
 		);
 	}
+
+    protected function issetNested(string $key, string $separator = '.'): bool
+    {
+        $keys = explode($separator, $key);
+        $current = $this->data;
+
+        foreach ($keys as $segment) {
+            if (!is_array($current) || !array_key_exists($segment, $current)) {
+                return false;
+            }
+            $current = $current[$segment];
+        }
+
+        return true;
+    }
 
 	public function getData(): array {
 		return $this->data;

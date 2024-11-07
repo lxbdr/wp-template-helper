@@ -58,6 +58,67 @@ class WpTemplateHelperTest2 extends TestCase
         $this->assertEquals('', $this->helper->get('non.existent.key'));
     }
 
+    public function testIssetNested()
+    {
+        $helper = new WpTemplateHelper([
+            'user' => [
+                'profile' => [
+                    'name' => 'John Doe',
+                    'email' => 'john@example.com',
+                    'settings' => [
+                        'newsletter' => true,
+                        'theme' => 'dark'
+                    ],
+                    'nullValue' => null,
+                    'emptyString' => '',
+                    'zero' => 0,
+                    'false' => false
+                ]
+            ],
+            'empty_array' => [],
+            'top_level' => 'value'
+        ]);
+
+        // Test existing nested keys
+        $this->assertTrue($helper->has('user.profile.name'));
+        $this->assertTrue($helper->has('user.profile.settings.newsletter'));
+        $this->assertTrue($helper->has('user.profile.settings.theme'));
+
+        // Test top level keys
+        $this->assertTrue($helper->has('top_level'));
+        $this->assertTrue($helper->has('empty_array'));
+
+        // Test non-existent keys
+        $this->assertFalse($helper->has('user.profile.nonexistent'));
+        $this->assertFalse($helper->has('nonexistent.key'));
+        $this->assertFalse($helper->has('user.profile.settings.nonexistent'));
+
+        // Test edge cases
+        $this->assertTrue($helper->has('user.profile.nullValue')); // Should return true for null values
+        $this->assertTrue($helper->has('user.profile.emptyString')); // Should return true for empty string
+        $this->assertTrue($helper->has('user.profile.zero')); // Should return true for zero
+        $this->assertTrue($helper->has('user.profile.false')); // Should return true for false
+
+        // Test partial paths
+        $this->assertTrue($helper->has('user.profile'));
+        $this->assertTrue($helper->has('user.profile.settings'));
+
+        // Test empty key
+        $this->assertFalse($helper->has(''));
+
+        // Test custom separator
+        $helper = new WpTemplateHelper([
+            'deeply' => [
+                'nested' => [
+                    'key' => 'value'
+                ]
+            ]
+        ]);
+
+        $this->assertTrue($helper->has('deeply/nested/key', '/'));
+        $this->assertFalse($helper->has('deeply/wrong/key', '/'));
+    }
+
     public function testHasMethod()
     {
         $this->assertTrue($this->helper->has('name'));
