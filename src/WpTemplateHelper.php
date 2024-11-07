@@ -2,6 +2,8 @@
 
 namespace Lxbdr\WpTemplateHelper;
 
+use Lxbdr\WpTemplateHelper\Traits\WpEscapingTrait;
+
 /**
  * @method static void clsx( ...$arguments )
  * @method static string _clsx( ...$arguments )
@@ -23,6 +25,8 @@ namespace Lxbdr\WpTemplateHelper;
  * @method string _withLineBreaks( array $lines = [], string $separator = '<br/>' )
  */
 class WpTemplateHelper implements \ArrayAccess {
+
+    use WpEscapingTrait;
 
     protected string $idPrefix = '';
 
@@ -106,7 +110,7 @@ class WpTemplateHelper implements \ArrayAccess {
 	 * @return mixed
 	 */
     #[\ReturnTypeWillChange]
-    protected function getNested( string $key, string $separator = '.' ) {
+    protected function getNested( string $key, string $separator = '.' ): mixed {
 		return array_reduce(
 			explode( $separator, $key ),
 			function ( $agg, $value ) {
@@ -150,37 +154,7 @@ class WpTemplateHelper implements \ArrayAccess {
 		var_dump( $this->getNested( $key ) );
 	}
 
-	public function _attr( string $key ): string {
-		return \esc_attr( $this->getNested( $key ) ?? '' );
-	}
 
-	public function attr( string $key ) {
-		echo $this->_attr( $key );
-	}
-
-	public function _url( string $key ): string {
-		return \esc_url( $this->getNested( $key ) ?? '' );
-	}
-
-	public function url( string $key ): void {
-		echo $this->_url( $key );
-	}
-
-	public function _html( string $key ): string {
-		return \esc_html( $this->getNested( $key ) ?? '' );
-	}
-
-	public function html( string $key ) {
-		echo $this->_html( $key );
-	}
-
-	public function _safeHtml( string $key ): string {
-		return \wp_kses_post( $this->getNested( $key ) ?? '' );
-	}
-
-	public function safeHtml( string $key ) {
-		echo $this->_safeHtml( $key );
-	}
 
 	public function sprintf( $str, $key ): string {
 		return sprintf( $str, $this->getNested( $key ) ?? '' );
