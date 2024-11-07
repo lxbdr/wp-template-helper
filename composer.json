@@ -1,25 +1,37 @@
 {
-    "name": "lxbdr/wp-template-helper",
-    "description": "Data wrapper for easy output with WordPress escaping functions.",
-    "minimum-stability": "dev",
-    "homepage": "https://github.com/lxbdr/wp-template-helper",
-    "type": "library",
-    "autoload": {
-        "psr-4": {
-            "Lxbdr\\WpTemplateHelper\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Alexander Bader",
-            "email": "hello@alexanderbader.de"
-        }
-    ],
-    "require": {
-        "php": ">=7.4"
-    },
+  "name": "lxbdr/wp-template-helper",
+  "description": "Data wrapper for easy output with WordPress escaping functions.",
+  "minimum-stability": "dev",
+  "homepage": "https://github.com/lxbdr/wp-template-helper",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Lxbdr\\WpTemplateHelper\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Lxbdr\\WpTemplateHelper\\Tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Alexander Bader",
+      "email": "hello@alexanderbader.de"
+    }
+  ],
+  "require": {
+    "php": ">=8.0"
+  },
   "require-dev": {
     "phpunit/phpunit": "^9",
-    "10up/wp_mock": "dev-trunk"
-    }
+    "10up/wp_mock": "dev-trunk",
+    "squizlabs/php_codesniffer": "4.0.x-dev"
+  },
+  "scripts": {
+    "test": "phpunit",
+    "check-style": "phpcs src tests",
+    "fix-style": "phpcbf src tests"
+  }
 }
