@@ -414,12 +414,12 @@ class WpTemplateHelper implements \ArrayAccess {
 	 * @param array $lines
 	 * @param string $separator
 	 *
-	 * @return void
+	 * @return string
 	 */
-	protected function _staticWithLineBreaks( $lines = [], $separator = '<br/>' ) {
+	protected function _staticWithLineBreaks( array $lines = [], string $separator = '<br/>' ): string {
 		$filtered = array_filter( $lines );
 
-		echo implode( $separator, $filtered );
+		return implode( $separator, $filtered );
 	}
 
 	/**
@@ -434,15 +434,44 @@ class WpTemplateHelper implements \ArrayAccess {
 		echo static::_staticWithLineBreaks( $lines, $separator );
 	}
 
+    /**
+     * Get lines from keys and output with linebreaks
+     *
+     * @param string[] $lines
+     * @param string $separator
+     * @return string
+     */
+    public function _withLineBreaks(array $lines = [], string $separator = '<br/>'): string
+    {
+//        $lines = array_map(function($line) {
+//            return $this->getNested($line);
+//        }, $lines);
+
+        $filtered = array_filter($lines);
+
+        return implode($separator, $filtered);
+    }
+
+    /**
+     * Get lines from keys and output with linebreaks
+     *
+     * @param string[] $lines
+     * @param string $separator
+     * @return void
+     */
+    public function withLineBreaks(array $lines = [], string $separator = '<br/>'): void
+    {
+        echo $this->_withLineBreaks($lines, $separator);
+    }
 
 	public function img( string $key, $size = 'full', $atts = '' ) {
 		echo $this->_img( $key, $size, $atts );
 	}
 
-	public function _img( string $key, $size = 'full', $atts = '' ) {
+	public function _img( string $key, $size = 'full', $atts = '' ): string {
 		$img = $this->getNested( $key );
 		if ( ! $img ) {
-			return;
+			return '';
 		}
 
 		if ( is_numeric( $img ) ) {
@@ -457,9 +486,13 @@ class WpTemplateHelper implements \ArrayAccess {
 			$alt = is_array( $atts ) ? ( $atts['alt'] ?? '' ) : '';
 		}
 
-		if ( ! $url ) {
-			return;
+		if ( ! isset($url) ) {
+			return '';
 		}
+
+        if (! isset($alt)) {
+            $alt = '';
+        }
 
 		if ( is_array( $atts ) ) {
 			unset( $atts['alt'] );
