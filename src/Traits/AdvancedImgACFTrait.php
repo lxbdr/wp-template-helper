@@ -19,7 +19,7 @@ trait AdvancedImgACFTrait
 
         \acf_add_local_field_group([
             'key' => 'lx_group_advanced_img',
-            'title' => __('Advanced Image Configuration', 'lxbdr'),
+            'title' => __('WpTemplateHelper Advanced Image Configuration', 'lxbdr'),
             'fields' => [
                 [
                     'key' => 'lx_field_advanced_img_base',
@@ -206,7 +206,65 @@ trait AdvancedImgACFTrait
                 ],
             ],
             'active' => false,
-            'description' => __('Advanced image configuration fields for cloning', 'lxbdr'),
+            'description' => __('Advanced image configuration fields. Clone this to your field.', 'lxbdr'),
+        ]);
+
+        \acf_add_local_field_group([
+            'key' => 'lx_group_responsive_img',
+            'title' => __('WpTemplateHelper Responsive Image Configuration', 'lxbdr'),
+            'fields' => [
+                [
+                    'key' => 'lx_field_advanced_img_base',
+                    'label' => __('Base Image', 'lxbdr'),
+                    'name' => 'base_img',
+                    'type' => 'image',
+                    'required' => 1,
+                    'return_format' => 'array',
+                    'preview_size' => 'medium',
+                    'library' => 'all',
+                ],
+                [
+                    'key' => 'lx_field_advanced_img_responsive',
+                    'label' => __('Responsive Settings', 'lxbdr'),
+                    'name' => 'sources',
+                    'type' => 'repeater',
+                    'layout' => 'block',
+                    'button_label' => __('Add Breakpoint', 'lxbdr'),
+                    'sub_fields' => [
+                        [
+                            'key' => 'lx_field_advanced_img_responsive_breakpoint',
+                            'label' => __('Media Query', 'lxbdr'),
+                            'name' => 'media_query',
+                            'type' => 'text',
+                            'required' => 1,
+                            'min' => 0,
+                            'append' => 'px',
+                            'instructions' => __('Enter breakpoint width in pixels', 'lxbdr'),
+                        ],
+                        [
+                            'key' => 'lx_field_advanced_img_responsive_img_id',
+                            'label' => __('Image', 'lxbdr'),
+                            'name' => 'img_id',
+                            'type' => 'image',
+                            'required' => 1,
+                            'return_format' => 'id',
+                            'preview_size' => 'medium',
+                            'library' => 'all',
+                        ],
+                    ],
+                ],
+            ],
+            'location' => [
+                [
+                    [
+                        'param' => 'post_type',
+                        'operator' => '==',
+                        'value' => 'none',
+                    ],
+                ],
+            ],
+            'active' => false,
+            'description' => __('Responsive image configuration fields. Clone this to your field', 'lxbdr'),
         ]);
     }
 
