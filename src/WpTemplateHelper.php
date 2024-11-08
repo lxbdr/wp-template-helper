@@ -17,6 +17,10 @@ use Lxbdr\WpTemplateHelper\Traits\WpEscapingTrait;
  * @method static string _attributes( array $arr )
  * @method void attributes( array $arr )
  * @method string _attributes( array $arr )
+ * @method static void heading(string $tag, string $content, string|array $attributes = [])
+ * @method static string _heading(string $tag, string $content, string|array $attributes = [])
+ * @method void heading(string $tag, string $key, string|array $attributes = [])
+ * @method string _heading(string $tag, string $key, string|array $attributes = [])
  * @method static Interfaces\WpTemplateHelperElement maybeAnchorTag(string $link, $atts, string $alternative_tag )
  * @method Interfaces\WpTemplateHelperElement maybeAnchorTag(string $link, $atts, string $alternative_tag )
  * @method static void withLineBreaks( array $lines = [], string $separator = '<br/>' )
@@ -208,13 +212,14 @@ class WpTemplateHelper implements \ArrayAccess {
 	 */
 	protected static function proxySharedCalls( $name, $arguments ) {
 		$method = strpos( $name, '_' ) === 0 ?
-			'_static' . ltrim( ucfirst( $name ), '_' )
+			'_static' . ucfirst(ltrim( $name, '_' ))
 			: 'static' . ucfirst( $name );
 
 
 		$callback = [ static::class, $method ];
 
 		if ( method_exists( static::class, $method ) && is_callable( $callback ) ) {
+            return static::{$method}(...$arguments);
 			return call_user_func_array( $callback, $arguments );
 		} else {
 			throw new \BadMethodCallException( "Method $name does not exist." );
@@ -227,6 +232,15 @@ class WpTemplateHelper implements \ArrayAccess {
 	}
 
 	public function __call( $name, $arguments ) {
+        $method = str_starts_with($name, '_') ?
+            '_instance' . ucfirst(ltrim( $name, '_' ))
+            : 'instance' . ucfirst( $name );
+
+        if (method_exists($this, $method) && is_callable([$this, $method])) {
+            return $this->{$method}(...$arguments);
+//            return call_user_func_array([$this, $method], $arguments);
+        }
+
 		return static::proxySharedCalls( $name, $arguments );
 	}
 
@@ -434,27 +448,25 @@ class WpTemplateHelper implements \ArrayAccess {
      * @param string $separator
      * @return string
      */
-    public function _withLineBreaks(array $lines = [], string $separator = '<br/>'): string
+    public function _instanceWithLineBreaks(array $keys = [], string $separator = '<br/>'): string
     {
-//        $lines = array_map(function($line) {
-//            return $this->getNested($line);
-//        }, $lines);
+        $lines = array_map(function($key) {
+            return $this->getNested($key);
+        }, array_filter($keys));
 
-        $filtered = array_filter($lines);
-
-        return implode($separator, $filtered);
+        return self::_withLineBreaks($lines, $separator);
     }
 
     /**
      * Get lines from keys and output with linebreaks
      *
-     * @param string[] $lines
+     * @param string[] $keys
      * @param string $separator
      * @return void
      */
-    public function withLineBreaks(array $lines = [], string $separator = '<br/>'): void
+    public function instanceWithLineBreaks(array $keys = [], string $separator = '<br/>'): void
     {
-        echo $this->_withLineBreaks($lines, $separator);
+        echo $this->_withLineBreaks($keys, $separator);
     }
 
 	public function img( string $key, $size = 'full', $atts = '' ) {
@@ -503,23 +515,45 @@ class WpTemplateHelper implements \ArrayAccess {
 		return ob_get_clean();
 	}
 
-	public function heading( $tag, $content, $attributes = [] ) {
-		if ( is_array( $attributes ) ) {
-			$attsString = $this->_attributes( $attributes );
-		} else if ( is_string( $attributes ) ) {
-			$attsString = $attributes;
-		} else {
-			$attsString = '';
-		}
+    protected static function _staticHeading( string $tag, string $content, string|array $attributes = [] ) {
+        if ( is_array( $attributes ) ) {
+            $attsString = self::_attributes( $attributes );
+        } else if ( is_string( $attributes ) ) {
+            $attsString = $attributes;
+        } else {
+            $attsString = '';
+        }
 
-		// check if tag is valid
-		$validTags = [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'span' ];
-		if ( ! in_array( $tag, $validTags ) ) {
-			$tag = 'div';
-		}
+        // check if tag is valid
+        $validTags = [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'span' ];
+        if ( ! in_array( $tag, $validTags ) ) {
+            $tag = 'div';
+        }
 
-		echo "<{$tag} {$attsString}>$content</{$tag}>";
+        if ($attsString) {
+            return "<{$tag} {$attsString}>{$content}</{$tag}>";
+        }
+
+        return "<{$tag}>{$content}</{$tag}>";
+    }
+
+    protected static function staticHeading( string $tag, string $content, string|array $attributes = [] ) {
+        echo self::_staticHeading( $tag, $content, $attributes );
+    }
+
+	protected function _instanceHeading( string $tag, string $key, string|array $attributes = [] ) {
+
+        $content = $this->getNested( $key );
+
+        $content = (string) $content;
+
+        return self::_staticHeading( $tag, $content, $attributes );
+
 	}
+
+    protected function instanceHeading( string $tag, string $key, string|array $attributes = [] ) {
+        echo $this->_heading( $tag, $key, $attributes );
+    }
 
 	public function _advancedImg( string $key ) {
 		$group = $this->getNested( $key );
@@ -705,27 +739,27 @@ class WpTemplateHelper implements \ArrayAccess {
 			return "";
 		}
 
-		$image = wp_get_attachment_image_src( $attachment_id, 'full' );
+		$image = \wp_get_attachment_image_src( $attachment_id, 'full' );
 
 		if ( ! $image ) {
 			return "";
 		}
 
-		$image_meta = wp_get_attachment_metadata( $attachment_id );
+		$image_meta = \wp_get_attachment_metadata( $attachment_id );
 
 		$image_src  = $image[0];
 		$size_array = array(
-			absint( $image[1] ),
-			absint( $image[2] ),
+			\absint( $image[1] ),
+			\absint( $image[2] ),
 		);
 
 		list( $src, $width, $height ) = $image;
 
-		$hwstring = image_hwstring( $width, $height );
+		$hwstring = \image_hwstring( $width, $height );
 
-		$sizes = wp_calculate_image_sizes( $size_array, $image_src, $image_meta, $attachment_id );
+		$sizes = \wp_calculate_image_sizes( $size_array, $image_src, $image_meta, $attachment_id );
 
-		$srcset = wp_calculate_image_srcset( $size_array, $image_src, $image_meta, $attachment_id );
+		$srcset = \wp_calculate_image_srcset( $size_array, $image_src, $image_meta, $attachment_id );
 
 		$media = $media_query ?? "";
 		$media = str_replace( '@media ', '', $media );
