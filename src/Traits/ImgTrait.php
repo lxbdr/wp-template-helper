@@ -82,6 +82,8 @@ trait ImgTrait
      *                                  //         'width-auto-height-full', 'width-auto-height-auto'
      *     'custom_width' => string     // Optional. CSS value for width (e.g., '500px', '50%')
      *     'custom_height' => string    // Optional. CSS value for height (e.g., '300px', '100vh')
+     *     'focal_x' => string          // Optional. Horizontal focal point (percentage or string)
+     *     'focal_y' => string          // Optional. Vertical focal point (percentage or string)
      *     'object_fit' => string       // Optional. One of: 'cover', 'contain'
      *     'display' => string          // Optional. One of: 'block', 'inline-block'
      *     'base_img' => array|string   // Base image. Can be:
@@ -107,7 +109,9 @@ trait ImgTrait
             return "";
         }
 
-        return $this->getAdvancedImgData($group);
+        $data = $this->getAdvancedImgData($group);
+
+        return $this->renderAdvancedImg($data);
     }
 
     /**
@@ -119,6 +123,8 @@ trait ImgTrait
      *                                  //         'width-auto-height-full', 'width-auto-height-auto'
      *     'custom_width' => string     // Optional. CSS value for width (e.g., '500px', '50%')
      *     'custom_height' => string    // Optional. CSS value for height (e.g., '300px', '100vh')
+     *     'focal_x' => string          // Optional. Horizontal focal point (percentage or string)
+     *     'focal_y' => string          // Optional. Vertical focal point (percentage or string)
      *     'object_fit' => string       // Optional. One of: 'cover', 'contain'
      *     'display' => string          // Optional. One of: 'block', 'inline-block'
      *     'base_img' => array|string   // Base image. Can be:
@@ -250,7 +256,7 @@ trait ImgTrait
      * Processes advanced image configuration data and prepares it for rendering.
      *
      * @param array $group The advanced image configuration data
-     * @return string The processed HTML
+     * @return array Processed image data with container classes, styles, and responsive image data
      */
     protected function getAdvancedImgData($group)
     {
@@ -317,14 +323,12 @@ trait ImgTrait
 
         $responsive_img_data = $this->getResponsiveImgData($group);
 
-        $data = [
+        return [
             'container_classes' => $classes,
             'container_styles' => $styles,
             'base_img' => $responsive_img_data['base_img'],
             'sources_tags' => $responsive_img_data['sources_tags'],
         ];
-
-        return $this->renderAdvancedImg($data);
     }
 
     /**
@@ -358,12 +362,12 @@ trait ImgTrait
     /**
      * Renders an advanced image with its container and styles.
      *
-     * @param array $data The processed image data
+     * @param array $data The processed image data with container classes, styles, and responsive image data
      * @return string The rendered HTML
      */
     protected function renderAdvancedImg($data)
     {
-        $t = new \Lxbdr\WpTemplateHelper\WpTemplateHelper($data);
+        $t = new static($data);
 
         ob_start();
         ?>
