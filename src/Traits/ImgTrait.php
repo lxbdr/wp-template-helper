@@ -76,10 +76,31 @@ trait ImgTrait
     /**
      * Generates HTML for an advanced image configuration with custom styling and layout options.
      *
+     * Expected array structure:
+     * [
+     *     'sizing' => string           // One of: 'width-full-height-full', 'width-full-height-auto',
+     *                                  //         'width-auto-height-full', 'width-auto-height-auto'
+     *     'custom_width' => string     // Optional. CSS value for width (e.g., '500px', '50%')
+     *     'custom_height' => string    // Optional. CSS value for height (e.g., '300px', '100vh')
+     *     'object_fit' => string       // Optional. One of: 'cover', 'contain'
+     *     'display' => string          // Optional. One of: 'block', 'inline-block'
+     *     'base_img' => array|string   // Base image. Can be:
+     *                                  // - Image ID (numeric string)
+     *                                  // - URL (string)
+     *                                  // - Array with 'url' and 'alt' keys
+     *     'sources' => [              // Optional. Array of responsive image sources
+     *         [
+     *             'img_id' => int     // WordPress attachment ID
+     *             'media_query' => string // Media query for when this source applies
+     *         ],
+     *         // ... additional sources
+     *     ]
+     * ]
+     *
      * @param string $key The key to lookup the advanced image configuration
      * @return string The generated HTML
      */
-    public function _advancedImg(string $key)
+    public function _advancedImg(string $key): string
     {
         $group = $this->getNested($key);
         if (!$group) {
@@ -90,18 +111,73 @@ trait ImgTrait
     }
 
     /**
-     * Outputs HTML for an advanced image configuration.
+     * Outputs HTML for an advanced image configuration with custom styling and layout options.
+     *
+     * Expected array structure:
+     * [
+     *     'sizing' => string           // One of: 'width-full-height-full', 'width-full-height-auto',
+     *                                  //         'width-auto-height-full', 'width-auto-height-auto'
+     *     'custom_width' => string     // Optional. CSS value for width (e.g., '500px', '50%')
+     *     'custom_height' => string    // Optional. CSS value for height (e.g., '300px', '100vh')
+     *     'object_fit' => string       // Optional. One of: 'cover', 'contain'
+     *     'display' => string          // Optional. One of: 'block', 'inline-block'
+     *     'base_img' => array|string   // Base image. Can be:
+     *                                  // - Image ID (numeric string)
+     *                                  // - URL (string)
+     *                                  // - Array with 'url' and 'alt' keys
+     *     'sources' => [              // Optional. Array of responsive image sources
+     *         [
+     *             'img_id' => int     // WordPress attachment ID
+     *             'media_query' => string // Media query for when this source applies
+     *         ],
+     *         // ... additional sources
+     *     ]
+     * ]
      *
      * @param string $key The key to lookup the advanced image configuration
-     * @return void
+     * @return void The generated HTML
      */
-    public function advancedImg(string $key)
+    public function advancedImg(string $key): void
     {
         echo $this->_advancedImg($key);
     }
 
     /**
      * Generates HTML for a responsive image with multiple sources based on media queries.
+     *
+     * Expected array structure:
+     * [
+     *     'base_img' => array|string   // Required. Base image. Can be:
+     *                                  // - Image ID (numeric string)
+     *                                  // - URL (string)
+     *                                  // - Array with 'url' and 'alt' keys
+     *     'sources' => [              // Optional. Array of responsive image sources
+     *         [
+     *             'img_id' => int     // WordPress attachment ID for this source
+     *             'media_query' => string // Media query when this source should be used
+     *                                    // Example: '(min-width: 768px)'
+     *         ],
+     *         // ... additional sources
+     *     ]
+     * ]
+     *
+     * Example usage:
+     * [
+     *     'base_img' => [
+     *         'url' => 'path/to/mobile.jpg',
+     *         'alt' => 'Description'
+     *     ],
+     *     'sources' => [
+     *         [
+     *             'img_id' => 123,
+     *             'media_query' => '(min-width: 768px)'
+     *         ],
+     *         [
+     *             'img_id' => 456,
+     *             'media_query' => '(min-width: 1024px)'
+     *         ]
+     *     ]
+     * ]
      *
      * @param string $key The key to lookup the responsive image configuration
      * @return string The generated HTML
@@ -126,12 +202,46 @@ trait ImgTrait
     }
 
     /**
-     * Outputs HTML for a responsive image.
+     * Outputs HTML for a responsive image with multiple sources based on media queries.
+     *
+     * Expected array structure:
+     * [
+     *     'base_img' => array|string   // Required. Base image. Can be:
+     *                                  // - Image ID (numeric string)
+     *                                  // - URL (string)
+     *                                  // - Array with 'url' and 'alt' keys
+     *     'sources' => [              // Optional. Array of responsive image sources
+     *         [
+     *             'img_id' => int     // WordPress attachment ID for this source
+     *             'media_query' => string // Media query when this source should be used
+     *                                    // Example: '(min-width: 768px)'
+     *         ],
+     *         // ... additional sources
+     *     ]
+     * ]
+     *
+     * Example usage:
+     * [
+     *     'base_img' => [
+     *         'url' => 'path/to/mobile.jpg',
+     *         'alt' => 'Description'
+     *     ],
+     *     'sources' => [
+     *         [
+     *             'img_id' => 123,
+     *             'media_query' => '(min-width: 768px)'
+     *         ],
+     *         [
+     *             'img_id' => 456,
+     *             'media_query' => '(min-width: 1024px)'
+     *         ]
+     *     ]
+     * ]
      *
      * @param string $key The key to lookup the responsive image configuration
-     * @return void
+     * @return void The generated HTML
      */
-    public function responsiveImg(string $key)
+    public function responsiveImg(string $key): void
     {
         echo $this->_responsiveImg($key);
     }
