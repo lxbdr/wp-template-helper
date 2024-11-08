@@ -32,6 +32,206 @@ $t = new \Lxbdr\WpTemplateHelper\WpTemplateHelper($data);
 // ...
 ```
 
+# Data Access & Escaping
+
+The `WpTemplateHelper` class provides a convenient and secure way to handle nested data structures and output content safely in WordPress templates. It includes various methods for data access and escaping.
+
+## Basic Data Access
+
+### Constructor
+
+```php
+$data = [
+    'user' => [
+        'name' => 'John Doe',
+        'profile' => [
+            'url' => 'https://example.com/john',
+            'bio' => '<p>Web developer & WordPress enthusiast</p>'
+        ]
+    ]
+];
+
+$template = new WpTemplateHelper($data);
+```
+
+### Accessing Data
+
+#### Using `get()`
+Retrieves raw data from the specified key. Returns empty string if not found.
+
+```php
+$name = $template->get('user.name'); // "John Doe"
+$nonexistent = $template->get('user.foo'); // ""
+```
+
+#### Using `has()`
+Checks if a key exists in the data structure. It uses `isset` under the hood and returns true for
+non-empty values.
+
+```php
+if ($template->has('user.profile')) {
+    // Access nested data
+}
+```
+
+#### Using `notEmpty()` / `empty()`
+Check if a value exists and is not empty.
+
+```php
+if ($template->notEmpty('user.bio')) {
+    // Value exists and is not empty
+}
+
+if ($template->empty('user.location')) {
+    // Value is empty or doesn't exist
+}
+```
+
+### Raw Output
+
+#### Using `raw()`
+Outputs the raw value without any escaping. Use with caution!
+
+```php
+$template->raw('user.name'); // Outputs: John Doe
+```
+
+#### Using `__invoke()`
+Shorthand for HTML-escaped output. Same as calling `html()`.
+
+```php
+$template = new WpTemplateHelper(['message' => 'Hello <world>']);
+$template('message'); // Outputs: Hello &lt;world&gt;
+```
+
+## Secure Output Methods
+
+### HTML Content
+
+```php
+// Safe HTML output with entities escaped
+$template->html('user.name');
+
+// Allow specific HTML tags (wp_kses_post)
+$template->safeHtml('user.profile.bio');
+```
+
+### URLs
+
+```php
+// In HTML attributes
+<a href="<?php $template->url('user.profile.url'); ?>">
+    <?php $template->html('user.name'); ?>
+</a>
+
+// Storing escaped URL
+$profileUrl = $template->_url('user.profile.url');
+```
+
+### HTML Attributes
+
+```php
+<div data-user="<?php $template->attr('user.name'); ?>"
+     title="<?php $template->attr('user.profile.title'); ?>">
+    <!-- content -->
+</div>
+```
+
+### JavaScript Content
+
+```php
+<script>
+    const userName = "<?php $template->js('user.name'); ?>";
+</script>
+```
+
+### XML Content
+
+```php
+<?xml version="1.0"?>
+<user>
+    <name><?php $template->xml('user.name'); ?></name>
+</user>
+```
+
+## Methods Overview
+
+### Output Methods (Echo)
+- `html($key)` - Escape HTML entities
+- `safeHtml($key)` - Allow safe HTML tags
+- `url($key)` - Escape URLs
+- `attr($key)` - Escape HTML attributes
+- `js($key)` - Escape JavaScript strings
+- `xml($key)` - Escape XML content
+- `raw($key)` - Raw output (unescaped)
+
+### Return Methods
+- `_html($key)` - Return escaped HTML
+- `_safeHtml($key)` - Return HTML with safe tags
+- `_url($key)` - Return escaped URL
+- `_attr($key)` - Return escaped attribute
+- `_js($key)` - Return escaped JavaScript
+- `_xml($key)` - Return escaped XML
+- `get($key)` - Return raw value
+
+### Data Access Methods
+- `has($key)` - Check key existence
+- `empty($key)` - Check if empty
+- `notEmpty($key)` - Check if not empty
+
+## Best Practices
+
+1. **Always Use Appropriate Escaping**
+```php
+// Bad
+<a href="<?php $template->raw('link'); ?>">
+
+// Good
+<a href="<?php $template->url('link'); ?>">
+```
+
+2. **Use Dot Notation for Nested Data**
+```php
+// Access deeply nested data
+$template->html('user.settings.preferences.theme');
+```
+
+3. **Combine with HTML Structure**
+```php
+// Clean and secure template code
+<div class="user-profile">
+    <h2><?php $template->html('user.name'); ?></h2>
+    <div class="bio">
+        <?php $template->safeHtml('user.profile.bio'); ?>
+    </div>
+    <a href="<?php $template->url('user.profile.url'); ?>"
+       title="<?php $template->attr('user.profile.title'); ?>">
+        View Profile
+    </a>
+</div>
+```
+
+4. **Use Return Methods for Variable Assignment**
+```php
+$userName = $template->_html('user.name');
+$profileUrl = $template->_url('user.profile.url');
+
+// Use in complex logic
+if ($template->has('user.profile') && $template->_url('user.profile.url')) {
+    // Process data
+}
+```
+
+## Security Note
+
+- Always use the appropriate escaping method for the context
+- Never use `raw()` for user-provided data
+- Use `safeHtml()` when you need to allow specific HTML tags
+- Consider context when choosing between `html()` and `attr()`
+
+# Utilities
+
+
 # Image functions
 
 WpTemplateHelper provides methods for handling and rendering various types of images in WordPress templates. It supports basic images, responsive images, and advanced image configurations with custom styling and layout options.
