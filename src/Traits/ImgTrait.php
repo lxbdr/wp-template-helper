@@ -21,7 +21,7 @@ trait ImgTrait
      * @param string|array $atts Additional HTML attributes for the img tag
      * @return void
      */
-    public function img(string $key, $size = 'full', $atts = '')
+    public function img(string $key, $size = 'full', $atts = ''): void
     {
         echo $this->_img($key, $size, $atts);
     }
