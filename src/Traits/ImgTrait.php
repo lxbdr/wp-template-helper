@@ -13,6 +13,8 @@ namespace Lxbdr\WpTemplateHelper\Traits;
  */
 trait ImgTrait
 {
+    use AdvancedImgACFTrait;
+
     /**
      * Outputs an image HTML element based on the provided key.
      *
