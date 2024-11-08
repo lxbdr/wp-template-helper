@@ -571,31 +571,6 @@ echo $template->getIdPrefix(); // e.g., "xyz89-"
 
 ## Common Use Cases
 
-### Multiple Template Instances
-```php
-$template1 = new WpTemplateHelper([
-    'title' => 'Section 1',
-    'content' => 'Content 1'
-]);
-
-$template2 = new WpTemplateHelper([
-    'title' => 'Section 2',
-    'content' => 'Content 2'
-]);
-
-// Each instance gets unique IDs
-?>
-<div id="<?php $template1->id('section'); ?>">
-    <h2 id="<?php $template1->id('title'); ?>"><?php $template1->html('title'); ?></h2>
-    <div id="<?php $template1->id('content'); ?>"><?php $template1->html('content'); ?></div>
-</div>
-
-<div id="<?php $template2->id('section'); ?>">
-    <h2 id="<?php $template2->id('title'); ?>"><?php $template2->html('title'); ?></h2>
-    <div id="<?php $template2->id('content'); ?>"><?php $template2->html('content'); ?></div>
-</div>
-```
-
 ### ARIA Relationships
 ```php
 $template = new WpTemplateHelper([
@@ -659,27 +634,8 @@ $template = new WpTemplateHelper([
 
 ## Best Practices
 
-1. **Consistent ID Generation**
-   - Always use the `id()` method instead of hardcoding IDs
-   - Keep ID suffixes meaningful and descriptive
-   - Use consistent suffixes across related elements
-
-2. **Managing ARIA Relationships**
-   - Use `id()` for both the source and target elements
-   - Store complex IDs in variables to ensure consistency
-   - Use meaningful suffixes that indicate the relationship
-
-3. **Prefix Management**
-   - Let the prefix auto-generate by default
-   - Only use `regenerateIdPrefix()` when you specifically need new IDs
-   - Use `getIdPrefix()` when you need to coordinate IDs outside the template
-
-4. **Performance Considerations**
-   - Store IDs in variables when they're used multiple times
-   - Generate IDs only when needed
-   - Consider caching the template instance if it's used frequently
-
-This ID management system ensures that your templates can be safely reused multiple times on the same page without ID collisions while maintaining proper ARIA relationships and accessibility.
+The main reason to use this helper is to prevent duplicate IDs in templates which are used multiple times on the same page. This can cause issues with JavaScript, CSS, and accessibility.
+Keep in mind that the ID prefix is unique to each instance of the helper and is randomly generated on instantiation.
 
 
 # Image functions
