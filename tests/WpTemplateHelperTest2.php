@@ -255,11 +255,11 @@ class WpTemplateHelperTest2 extends TestCase
     {
         $lines = ['Line 1', '', 'Line 2', 'Line 3'];
         $expected = 'Line 1<br/>Line 2<br/>Line 3';
-        $this->assertEquals($expected, $this->helper->_withLineBreaks($lines));
+        $this->assertEquals($expected, WpTemplateHelper::_withLineBreaks($lines));
 
         // Custom separator
         $expected = 'Line 1|Line 2|Line 3';
-        $this->assertEquals($expected, $this->helper->_withLineBreaks($lines, '|'));
+        $this->assertEquals($expected, WpTemplateHelper::_withLineBreaks($lines, '|'));
     }
 }
 

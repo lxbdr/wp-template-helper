@@ -423,7 +423,7 @@ class WpTemplateHelper implements \ArrayAccess {
 	 *
 	 * @return string
 	 */
-	protected function _staticWithLineBreaks( array $lines = [], string $separator = '<br/>' ): string {
+	protected static function _staticWithLineBreaks( array $lines = [], string $separator = '<br/>' ): string {
 		$filtered = array_filter( $lines );
 
 		return implode( $separator, $filtered );
@@ -437,7 +437,7 @@ class WpTemplateHelper implements \ArrayAccess {
 	 *
 	 * @return void
 	 */
-	protected function staticWithLineBreaks( $lines = [], $separator = '<br/>' ) {
+	protected static function staticWithLineBreaks( $lines = [], $separator = '<br/>' ) {
 		echo static::_staticWithLineBreaks( $lines, $separator );
 	}
 
@@ -454,7 +454,7 @@ class WpTemplateHelper implements \ArrayAccess {
             return $this->getNested($key);
         }, array_filter($keys));
 
-        return self::_withLineBreaks($lines, $separator);
+        return self::_staticWithLineBreaks($lines, $separator);
     }
 
     /**
