@@ -229,7 +229,457 @@ if ($template->has('user.profile') && $template->_url('user.profile.url')) {
 - Use `safeHtml()` when you need to allow specific HTML tags
 - Consider context when choosing between `html()` and `attr()`
 
-# Utilities
+# Utility Methods
+
+The `WpTemplateHelper` class provides several utility methods for common template operations. These methods can be used both statically and as instance methods.
+
+## Class Methods
+
+### `clsx()` - Dynamic Class Names
+Combines class names based on conditions. Similar to the popular `classnames` JavaScript library.
+
+```php
+// Static usage
+WpTemplateHelper::_clsx(
+    'btn',
+    [
+        'btn--primary' => true,
+        'btn--large' => $isLarge,
+        'btn--disabled' => !$isEnabled
+    ],
+    $additionalClasses
+);
+
+// Instance usage with data
+$template = new WpTemplateHelper([
+    'isActive' => true,
+    'size' => 'large'
+]);
+
+<div class="<?php $template->clsx(
+    'component',
+    [
+        'component--active' => $template->get('isActive'),
+        'component--large' => $template->get('size') === 'large'
+    ]
+); ?>">
+```
+
+Output:
+```html
+<!-- If $isLarge = true and $isEnabled = false -->
+<div class="btn btn--primary btn--large btn--disabled">
+
+<!-- With instance data -->
+<div class="component component--active component--large">
+```
+
+### `style()` - Inline Styles
+Generates inline CSS style strings. Handles conditional styles and value filtering.
+
+```php
+// Static usage
+<div style="<?php WpTemplateHelper::style([
+    'display' => 'flex',
+    'margin-top' => '20px',
+    'color' => $textColor,
+    'background' => $isDisabled ? '#ccc' : false
+]); ?>">
+
+// Instance usage
+$template = new WpTemplateHelper([
+    'spacing' => '2rem',
+    'color' => '#333'
+]);
+
+<div style="<?php $template->style([
+    'padding' => $template->get('spacing'),
+    'color' => $template->get('color'),
+    'display' => 'block'
+]); ?>">
+```
+
+Output:
+```html
+<!-- Static example with $textColor = '#000' and $isDisabled = true -->
+<div style="display: flex; margin-top: 20px; color: #000; background: #ccc;">
+
+<!-- Instance example -->
+<div style="padding: 2rem; color: #333; display: block;">
+```
+
+### `attributes()` - HTML Attributes
+Generates HTML attribute strings with proper escaping.
+
+```php
+// Static usage
+<div <?php WpTemplateHelper::attributes([
+    'id' => 'main-content',
+    'data-user' => $userName,
+    'aria-label' => 'Main content area'
+]); ?>>
+
+// Instance usage
+$template = new WpTemplateHelper([
+    'elementId' => 'user-profile',
+    'userData' => [
+        'name' => 'John Doe',
+        'role' => 'admin'
+    ]
+]);
+
+<div <?php $template->attributes([
+    'id' => $template->get('elementId'),
+    'data-user' => $template->get('userData.name'),
+    'data-role' => $template->get('userData.role')
+]); ?>>
+```
+
+Output:
+```html
+<div id="main-content" data-user="John Smith" aria-label="Main content area">
+<div id="user-profile" data-user="John Doe" data-role="admin">
+```
+
+### `heading()` - Semantic Headings
+Creates semantic heading elements with attributes. Validates heading tags.
+
+```php
+// Static usage
+<?php WpTemplateHelper::heading('h1', 'Welcome to our site', [
+    'class' => 'main-title',
+    'id' => 'welcome-heading'
+]); ?>
+
+// Instance usage
+$template = new WpTemplateHelper([
+    'title' => 'Welcome Back',
+    'subtitle' => 'Your Dashboard'
+]);
+
+<?php $template->heading('h1', 'title', [
+    'class' => 'dashboard-title'
+]); ?>
+
+<?php $template->heading('h2', 'subtitle', [
+    'class' => 'dashboard-subtitle'
+]); ?>
+```
+
+Output:
+```html
+<h1 class="main-title" id="welcome-heading">Welcome to our site</h1>
+<h1 class="dashboard-title">Welcome Back</h1>
+<h2 class="dashboard-subtitle">Your Dashboard</h2>
+```
+
+### `maybeAnchorTag()` - Conditional Links
+Creates either an anchor tag or alternative element based on link presence.
+
+```php
+// Static usage
+<?php
+$tag = WpTemplateHelper::maybeAnchorTag(
+    'https://example.com',
+    ['class' => 'btn'],
+    'span'
+);
+$tag->open();
+echo 'Click me';
+$tag->close();
+?>
+
+// Instance usage with data
+$template = new WpTemplateHelper([
+    'link' => [
+        'url' => 'https://example.com',
+        'target' => '_blank'
+    ]
+]);
+
+<?php
+$tag = $template->maybeAnchorTag(
+   'link.url',
+    [
+        'class' => 'btn',
+        'target' => $template->get('link.target')
+    ],
+    'div'
+);
+?>
+<?php $tag->open(); ?>
+    Click Here
+<?php $tag->close(); ?>
+```
+
+Output:
+```html
+<!-- With valid URL -->
+<a href="https://example.com" class="btn">Click me</a>
+
+<!-- Without URL -->
+<span class="btn">Click me</span>
+```
+
+### `withLineBreaks()` - Line Break Formatting
+Joins array elements with line breaks, filtering empty values.
+
+```php
+// Static usage
+<?php WpTemplateHelper::withLineBreaks([
+    'First line',
+    'Second line',
+    '',  // Will be filtered out
+    'Third line'
+]); ?>
+
+// Instance usage with data
+$template = new WpTemplateHelper([
+    'address' => [
+        'street' => '123 Main St',
+        'city' => 'Springfield',
+        'state' => 'ST',
+        'zip' => '12345'
+    ]
+]);
+
+<?php $template->withLineBreaks([
+    'address.street',
+    'address.city',
+    'address.state',
+    'address.zip'
+]); ?>
+```
+
+Output:
+```html
+First line<br/>Second line<br/>Third line
+
+123 Main St<br/>Springfield<br/>ST<br/>12345
+```
+
+## Using Return Methods
+
+All methods have a corresponding return version prefixed with underscore (`_`):
+
+```php
+// Store result in variable
+$classes = WpTemplateHelper::_clsx(['btn', 'btn--primary' => true]);
+$styles = WpTemplateHelper::_style(['color' => 'red']);
+$attributes = WpTemplateHelper::_attributes(['id' => 'main']);
+$heading = WpTemplateHelper::_heading('h1', 'Title', ['class' => 'main']);
+$content = WpTemplateHelper::_withLineBreaks(['Line 1', 'Line 2']);
+
+// Using with conditions
+if (WpTemplateHelper::_clsx(['active' => $condition])) {
+    // Do something
+}
+```
+
+## Best Practices
+
+1. **Use Type-Appropriate Methods**
+    - Use `clsx()` for dynamic class names
+    - Use `style()` for inline styles
+    - Use `attributes()` for HTML attributes
+    - Use `heading()` for semantic headings
+    - Use `maybeAnchorTag()` for conditional links
+    - Use `withLineBreaks()` for formatted text blocks
+
+2. **Choose Static vs Instance Methods**
+    - Use static methods for standalone utilities
+    - Use instance methods when working with template data
+
+3. **Combine with Data Access**
+```php
+$template = new WpTemplateHelper($data);
+
+<div <?php $template->attributes([
+    'class' => $template->_clsx([
+        'component',
+        'component--active' => $template->get('isActive')
+    ]),
+    'style' => $template->_style([
+        'color' => $template->get('textColor')
+    ])
+]); ?>>
+```
+
+### ID Management
+
+The `WpTemplateHelper` provides methods for generating and managing unique IDs for HTML elements. Each instance maintains its own ID prefix to ensure uniqueness across multiple template instances.
+
+### `id()` / `_id()` - Prefixed IDs
+Generates a unique, prefixed ID for HTML elements. The prefix is automatically generated and helps prevent ID collisions when multiple instances of templates are used on the same page.
+
+```php
+// Instance usage
+$template = new WpTemplateHelper([
+    'title' => 'My Page',
+    'content' => 'Page content'
+]);
+
+// Echo the ID
+<div id="<?php $template->id('header'); ?>">
+    <nav id="<?php $template->id('main-nav'); ?>">
+</div>
+
+// Store ID in variable
+$headerId = $template->_id('header');
+$navId = $template->_id('main-nav');
+```
+
+Output:
+```html
+<!-- Each instance has a unique prefix (e.g., "abc12-") -->
+<div id="abc12-header">
+    <nav id="abc12-main-nav">
+</div>
+```
+
+### `getIdPrefix()` - Current Prefix
+Retrieves the current ID prefix being used by the instance.
+
+```php
+$template = new WpTemplateHelper([]);
+$prefix = $template->getIdPrefix(); // e.g., "abc12-"
+
+// Useful for coordinating IDs with aria-labels or other references
+<button id="<?php $template->id('trigger'); ?>"
+        aria-controls="<?php $template->id('dropdown'); ?>">
+    Toggle Menu
+</button>
+<div id="<?php $template->id('dropdown'); ?>"
+     aria-labelledby="<?php $template->id('trigger'); ?>">
+    <!-- Dropdown content -->
+</div>
+```
+
+### `regenerateIdPrefix()` - New Prefix
+Forces generation of a new random ID prefix. Useful when you need to ensure a fresh set of IDs.
+
+```php
+$template = new WpTemplateHelper([]);
+
+// Initial prefix
+echo $template->getIdPrefix(); // e.g., "abc12-"
+
+// Generate new prefix
+$template->regenerateIdPrefix();
+echo $template->getIdPrefix(); // e.g., "xyz89-"
+```
+
+## Common Use Cases
+
+### Multiple Template Instances
+```php
+$template1 = new WpTemplateHelper([
+    'title' => 'Section 1',
+    'content' => 'Content 1'
+]);
+
+$template2 = new WpTemplateHelper([
+    'title' => 'Section 2',
+    'content' => 'Content 2'
+]);
+
+// Each instance gets unique IDs
+?>
+<div id="<?php $template1->id('section'); ?>">
+    <h2 id="<?php $template1->id('title'); ?>"><?php $template1->html('title'); ?></h2>
+    <div id="<?php $template1->id('content'); ?>"><?php $template1->html('content'); ?></div>
+</div>
+
+<div id="<?php $template2->id('section'); ?>">
+    <h2 id="<?php $template2->id('title'); ?>"><?php $template2->html('title'); ?></h2>
+    <div id="<?php $template2->id('content'); ?>"><?php $template2->html('content'); ?></div>
+</div>
+```
+
+### ARIA Relationships
+```php
+$template = new WpTemplateHelper([
+    'tabs' => [
+        ['title' => 'Tab 1', 'content' => 'Content 1'],
+        ['title' => 'Tab 2', 'content' => 'Content 2']
+    ]
+]);
+?>
+
+<div class="tabs">
+    <div role="tablist">
+        <?php foreach ($template->get('tabs') as $index => $tab): ?>
+            <button role="tab"
+                    id="<?php $template->id("tab-$index"); ?>"
+                    aria-controls="<?php $template->id("panel-$index"); ?>">
+                <?php echo esc_html($tab['title']); ?>
+            </button>
+        <?php endforeach; ?>
+    </div>
+
+    <?php foreach ($template->get('tabs') as $index => $tab): ?>
+        <div role="tabpanel"
+             id="<?php $template->id("panel-$index"); ?>"
+             aria-labelledby="<?php $template->id("tab-$index"); ?>">
+            <?php echo esc_html($tab['content']); ?>
+        </div>
+    <?php endforeach; ?>
+</div>
+```
+
+### Forms and Labels
+```php
+$template = new WpTemplateHelper([
+    'fields' => [
+        'name' => 'Full Name',
+        'email' => 'Email Address',
+        'message' => 'Your Message'
+    ]
+]);
+?>
+
+<form id="<?php $template->id('contact-form'); ?>">
+    <?php foreach ($template->get('fields') as $field => $label): ?>
+        <?php 
+        $fieldId = $template->_id("field-$field");
+        $labelId = $template->_id("label-$field");
+        ?>
+        <div class="form-group">
+            <label id="<?php echo esc_attr($labelId); ?>"
+                   for="<?php echo esc_attr($fieldId); ?>">
+                <?php echo esc_html($label); ?>
+            </label>
+            <input id="<?php echo esc_attr($fieldId); ?>"
+                   aria-labelledby="<?php echo esc_attr($labelId); ?>"
+                   name="<?php echo esc_attr($field); ?>">
+        </div>
+    <?php endforeach; ?>
+</form>
+```
+
+## Best Practices
+
+1. **Consistent ID Generation**
+   - Always use the `id()` method instead of hardcoding IDs
+   - Keep ID suffixes meaningful and descriptive
+   - Use consistent suffixes across related elements
+
+2. **Managing ARIA Relationships**
+   - Use `id()` for both the source and target elements
+   - Store complex IDs in variables to ensure consistency
+   - Use meaningful suffixes that indicate the relationship
+
+3. **Prefix Management**
+   - Let the prefix auto-generate by default
+   - Only use `regenerateIdPrefix()` when you specifically need new IDs
+   - Use `getIdPrefix()` when you need to coordinate IDs outside the template
+
+4. **Performance Considerations**
+   - Store IDs in variables when they're used multiple times
+   - Generate IDs only when needed
+   - Consider caching the template instance if it's used frequently
+
+This ID management system ensures that your templates can be safely reused multiple times on the same page without ID collisions while maintaining proper ARIA relationships and accessibility.
 
 
 # Image functions

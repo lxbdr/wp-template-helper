@@ -22,8 +22,8 @@ use Lxbdr\WpTemplateHelper\Traits\WpEscapingTrait;
  * @method static string _heading(string $tag, string $content, string|array $attributes = [])
  * @method void heading(string $tag, string $key, string|array $attributes = [])
  * @method string _heading(string $tag, string $key, string|array $attributes = [])
- * @method static Interfaces\WpTemplateHelperElement maybeAnchorTag(string $link, $atts, string $alternative_tag )
- * @method Interfaces\WpTemplateHelperElement maybeAnchorTag(string $link, $atts, string $alternative_tag )
+ * @method static Interfaces\WpTemplateHelperElement maybeAnchorTag(string $link, $atts, string $alternative_tag = 'div' )
+ * @method Interfaces\WpTemplateHelperElement maybeAnchorTag(string $key, $atts, string $alternative_tag = 'div' )
  * @method static void withLineBreaks( array $lines = [], string $separator = '<br/>' )
  * @method static string _withLineBreaks( array $lines = [], string $separator = '<br/>' )
  * @method void withLineBreaks( array $lines = [], string $separator = '<br/>' )
@@ -221,7 +221,6 @@ class WpTemplateHelper implements \ArrayAccess {
 		$callback = [ static::class, $method ];
 
 		if ( method_exists( static::class, $method ) && is_callable( $callback ) ) {
-            return static::{$method}(...$arguments);
 			return call_user_func_array( $callback, $arguments );
 		} else {
 			throw new \BadMethodCallException( "Method $name does not exist." );
@@ -239,8 +238,7 @@ class WpTemplateHelper implements \ArrayAccess {
             : 'instance' . ucfirst( $name );
 
         if (method_exists($this, $method) && is_callable([$this, $method])) {
-            return $this->{$method}(...$arguments);
-//            return call_user_func_array([$this, $method], $arguments);
+            return call_user_func_array([$this, $method], $arguments);
         }
 
 		return static::proxySharedCalls( $name, $arguments );
@@ -381,6 +379,11 @@ class WpTemplateHelper implements \ArrayAccess {
 			}
 		};
 	}
+
+    public function instanceMaybeAnchorTag(string $key, $atts = '', string $alternative_tag = 'div' ) {
+        $link = $this->getNested($key);
+        return static::staticMaybeAnchorTag($link, $atts, $alternative_tag);
+    }
 
 	public function link( string $key, $text = null, $atts = '' ) {
 		$link = $this->getNested( $key );
