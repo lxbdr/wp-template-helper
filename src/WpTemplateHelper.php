@@ -82,7 +82,8 @@ class WpTemplateHelper implements \ArrayAccess {
 
     public function regenerateIdPrefix(): void
     {
-        $this->idPrefix = substr(md5(uniqid('', true)), 0, 5) . '-';
+        // Prefix with id to make sure it does not start with a number
+        $this->idPrefix = 'id' . substr(md5(uniqid('', true)), 0, 5) . '-';
     }
 
 	/**
