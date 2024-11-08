@@ -31,3 +31,236 @@ $t = new \Lxbdr\WpTemplateHelper\WpTemplateHelper($data);
 <?php
 // ...
 ```
+
+# Image functions
+
+WpTemplateHelper provides methods for handling and rendering various types of images in WordPress templates. It supports basic images, responsive images, and advanced image configurations with custom styling and layout options.
+
+## Basic Image Methods
+
+### `img($key, $size = 'full', $atts = '')`
+### `_img($key, $size = 'full', $atts = '')`
+
+Renders/returns an HTML image element based on the provided key. Supports various input formats including image IDs, URLs, and arrays with metadata.
+
+```php
+// Using a WordPress image ID
+$data = ['profile_image' => 123];
+$template = new WpTemplateHelper($data);
+
+// Echo the image
+$template->img('profile_image');
+// Output: <img src="path/to/image.jpg" alt="Image Alt Text">
+
+// With custom size and attributes
+$template->img('profile_image', 'thumbnail', ['class' => 'rounded']);
+// Output: <img src="path/to/thumbnail.jpg" alt="Image Alt Text" class="rounded">
+
+// Using direct URL
+$data = ['hero_image' => 'https://example.com/image.jpg'];
+$template->img('hero_image');
+// Output: <img src="https://example.com/image.jpg" alt="">
+
+// Using array with URL and alt text
+$data = [
+    'team_member' => [
+        'url' => 'https://example.com/member.jpg',
+        'alt' => 'Team Member Photo'
+    ]
+];
+$template->img('team_member');
+// Output: <img src="https://example.com/member.jpg" alt="Team Member Photo">
+```
+
+## Responsive Image Methods
+
+### `responsiveImg($key)`
+### `_responsiveImg($key)`
+
+Generates HTML for a responsive image with multiple sources based on media queries.
+
+```php
+$data = [
+    'hero' => [
+        'base_img' => [
+            'url' => 'path/to/mobile.jpg',
+            'alt' => 'Hero Image'
+        ],
+        'sources' => [
+            [
+                'img_id' => 123, // WordPress image ID
+                'media_query' => '(min-width: 768px)'
+            ],
+            [
+                'img_id' => 456,
+                'media_query' => '(min-width: 1024px)'
+            ]
+        ]
+    ]
+];
+
+$template = new WpTemplateHelper($data);
+$template->responsiveImg('hero');
+
+// Output:
+// <picture>
+//     <source media="(min-width: 1024px)" srcset="path/to/desktop.jpg 1200w" sizes="100vw">
+//     <source media="(min-width: 768px)" srcset="path/to/tablet.jpg 800w" sizes="100vw">
+//     <img src="path/to/mobile.jpg" alt="Hero Image">
+// </picture>
+```
+
+## Advanced Image Methods
+
+### `advancedImg($key)`
+### `_advancedImg($key)`
+
+Renders an image with advanced configuration options including custom sizing, focal points, and object-fit properties.
+
+```php
+$data = [
+    'featured' => [
+        'sizing' => 'width-full-height-full',
+        'custom_width' => '500px',
+        'custom_height' => '300px',
+        'focal_x' => '30',
+        'focal_y' => '70',
+        'object_fit' => 'cover',
+        'display' => 'block',
+        'base_img' => [
+            'url' => 'path/to/image.jpg',
+            'alt' => 'Featured Image'
+        ],
+        'sources' => [] // Optional responsive sources
+    ]
+];
+
+$template = new WpTemplateHelper($data);
+$template->advancedImg('featured');
+
+// Output:
+// <div class="lx-img lx-img--full-width lx-img--full-height lx-img--cover lx-img--block" 
+//      style="--width: 500px; --height: 300px; --focal-x: 30%; --focal-y: 70%">
+//     <picture>
+//         <img src="path/to/image.jpg" alt="Featured Image">
+//     </picture>
+// </div>
+```
+
+### Available Sizing Options
+- `width-full-height-full`: Image takes full width and height of container
+- `width-full-height-auto`: Image takes full width with auto height
+- `width-auto-height-full`: Image takes full height with auto width
+- `width-auto-height-auto`: Image dimensions are automatic
+
+### Object Fit Options
+- `cover`: Image covers the entire container
+- `contain`: Image is contained within the container
+
+### Display Options
+- `block`: Display as block element
+- `inline-block`: Display as inline-block element
+
+## CSS Integration
+
+The trait provides a static method `getAdvancedImgCss()` that returns the necessary CSS for advanced image features. Include this CSS in your theme or plugin:
+
+```php
+// In your theme's functions.php or plugin file
+add_action('wp_head', function() {
+    echo '<style>' . WpTemplateHelper::getAdvancedImgCss() . '</style>';
+});
+
+// Or via enqueue scripts to attach it to an existing handle
+add_action('wp_enqueue_scripts', function() {
+	$style = \Lxbdr\WpTemplateHelper\WpTemplateHelper::getAdvancedImgCss();
+	wp_add_inline_style('wp-block-library', $style);
+});
+```
+
+## ACF Integration
+
+WpTemplateHelper provides a method to register field groups which contain all fields for using the advanced image feature.
+Call `registerAdvancedImgAcfFields()` to register the field groups with ACF.
+The field names are not prefixed and meant to be used in a clone field within a group.
+Important: The clone field should be a subfield of a group field otherwise it might not save correctly if multiple
+images/clone fields are used.
+
+```php
+\add_action( 'acf/init', function () {
+
+	\Lxbdr\WpTemplateHelper\WpTemplateHelper::registerAdvancedImgAcfFields();
+} );
+```
+
+Example usage in a group:
+
+```php
+array(
+			'key' => 'field_672e120b01cf8',
+			'label' => 'Clone img group wrapper',
+			'name' => 'clone_img_group_wrapper',
+			'aria-label' => '',
+			'type' => 'group',
+			'instructions' => '',
+			'required' => 0,
+			'conditional_logic' => 0,
+			'wrapper' => array(
+				'width' => '',
+				'class' => '',
+				'id' => '',
+			),
+			'layout' => 'block',
+			'sub_fields' => array(
+				array(
+					'key' => 'field_672e122901cf9',
+					'label' => 'clone_img_group',
+					'name' => 'clone_img_group',
+					'aria-label' => '',
+					'type' => 'clone',
+					'instructions' => '',
+					'required' => 0,
+					'conditional_logic' => 0,
+					'wrapper' => array(
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'clone' => array(
+						0 => 'lx_group_advanced_img',
+					),
+					'display' => 'seamless',
+					'layout' => 'block',
+					'prefix_label' => 0,
+					'prefix_name' => 0,
+				),
+			),
+		),
+	),
+
+// access img fields like this
+$img_data = get_field('clone_img_group_wrapper');
+
+// and using the WpTemplateHelper
+$data = [
+'my_img' => get_field('clone_img_group_wrapper')
+];
+$t = new \Lxbdr\WpTemplateHelper\WpTemplateHelper($data);
+$t->advancedImg('my_img');
+```
+
+## Notes
+
+- The trait relies on WordPress core functions for image handling
+- Images are automatically escaped for security
+- All methods prefixed with underscore (e.g., `_img()`) return the HTML string instead of echoing
+- Responsive images automatically use WordPress's built-in srcset and sizes attributes
+- Advanced image configurations support CSS custom properties for dynamic styling
+
+## Best Practices
+
+1. Always provide alt text for accessibility
+2. Use responsive images for better performance on different devices
+3. Consider using advanced image configuration for complex layouts
+4. Set appropriate focal points for images that will be cropped
+5. Include the CSS when using advanced image features
