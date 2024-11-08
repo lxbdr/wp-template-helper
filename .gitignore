@@ -6,6 +6,7 @@ composer.phar
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
 # composer.lock
 
+.vscode/
 ### VisualStudioCode template
 .vscode/*
 !.vscode/settings.json
@@ -35,6 +36,7 @@ composer.phar
 # Build data
 /build/
 
+.idea/
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
