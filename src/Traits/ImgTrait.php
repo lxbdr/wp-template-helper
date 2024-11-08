@@ -463,53 +463,53 @@ trait ImgTrait
     }
 
     /* Sizing Classes */
-    .lx-img--full-width {
+    .lx-img.lx-img--full-width {
         width: 100%;
     }
 
-    .lx-img--full-width img {
+    .lx-img.lx-img--full-width img {
         width: 100%;
     }
 
-    .lx-img--full-height {
+    .lx-img.lx-img--full-height {
         height: 100%;
     }
 
-    .lx-img--full-height img {
+    .lx-img.lx-img--full-height img {
         height: 100%;
     }
 
     /* Custom Dimensions */
-    .lx-img--constrained {
+    .lx-img.lx-img--constrained {
         width: var(--width, auto);
         height: var(--height, auto);
     }
 
-    .lx-img--constrained img {
+    .lx-img.lx-img--constrained img {
         width: 100%;
         height: 100%;
     }
 
     /* Object Fit Classes */
-    .lx-img--cover img {
+    .lx-img.lx-img--cover img {
         object-fit: cover;
     }
 
-    .lx-img--contain img {
+    .lx-img.lx-img--contain img {
         object-fit: contain;
     }
 
     /* Focal Point */
-    .lx-img--has-focal img {
+    .lx-img.lx-img--has-focal img {
         object-position: var(--focal-x, 50%) var(--focal-y, 50%);
     }
 
     /* Display Classes */
-    .lx-img--block {
+    .lx-img.lx-img--block {
         display: block;
     }
 
-    .lx-img--inline-block {
+    .lx-img.lx-img--inline-block {
         display: inline-block;
     }
 
