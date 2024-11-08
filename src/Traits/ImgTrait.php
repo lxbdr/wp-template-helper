@@ -446,7 +446,7 @@ trait ImgTrait
      *
      * @return string The complete CSS ruleset
      */
-    protected function getAdvancedImgCss()
+    public static function getAdvancedImgCss()
     {
         return <<<CSS
 
