@@ -538,5 +538,5 @@ CSS;
      * @return mixed The retrieved value
      */
     #[\ReturnTypeWillChange]
-    abstract protected function getNested(string $key, string $separator = '.'): mixed;
+    abstract protected function getNested(string $key, string $separator = '.');
 }

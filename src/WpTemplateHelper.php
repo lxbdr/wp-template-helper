@@ -92,7 +92,7 @@ class WpTemplateHelper implements \ArrayAccess {
 	 * @return mixed value or empty string
 	 */
     #[\ReturnTypeWillChange]
-	public function get( $key ): mixed
+	public function get( $key )
     {
 		return $this->getNested( $key ) ?? '';
 	}
@@ -100,7 +100,7 @@ class WpTemplateHelper implements \ArrayAccess {
     #[\ReturnTypeWillChange]
 	public function set( string $key, $value ): void
     {
-		if (str_contains($key, '.')) {
+		if (strpos($key, '.') !== false) {
 			throw new \Exception( "set nested key is not supported yet." );
 		}
 		$this->data[ $key ] = $value;
@@ -117,7 +117,7 @@ class WpTemplateHelper implements \ArrayAccess {
 	 * @return mixed
 	 */
     #[\ReturnTypeWillChange]
-    protected function getNested( string $key, string $separator = '.' ): mixed {
+    protected function getNested( string $key, string $separator = '.' ) {
 		return array_reduce(
 			explode( $separator, $key ),
 			function ( $agg, $value ) {
@@ -234,7 +234,7 @@ class WpTemplateHelper implements \ArrayAccess {
 	}
 
 	public function __call( $name, $arguments ) {
-        $method = str_starts_with($name, '_') ?
+        $method = strpos( $name, '_' ) === 0 ?
             '_instance' . ucfirst(ltrim( $name, '_' ))
             : 'instance' . ucfirst( $name );
 
@@ -475,7 +475,7 @@ class WpTemplateHelper implements \ArrayAccess {
         echo $this->_withLineBreaks($keys, $separator);
     }
 
-    protected static function _staticHeading( string $tag, string $content, string|array $attributes = [] ) {
+    protected static function _staticHeading( string $tag, string $content, $attributes = [] ) {
         if ( is_array( $attributes ) ) {
             $attsString = self::_attributes( $attributes );
         } else if ( is_string( $attributes ) ) {
@@ -497,11 +497,11 @@ class WpTemplateHelper implements \ArrayAccess {
         return "<{$tag}>{$content}</{$tag}>";
     }
 
-    protected static function staticHeading( string $tag, string $content, string|array $attributes = [] ) {
+    protected static function staticHeading( string $tag, string $content, $attributes = [] ) {
         echo self::_staticHeading( $tag, $content, $attributes );
     }
 
-	protected function _instanceHeading( string $tag, string $key, string|array $attributes = [] ) {
+	protected function _instanceHeading( string $tag, string $key, $attributes = [] ) {
 
         $content = $this->getNested( $key );
 
@@ -511,7 +511,7 @@ class WpTemplateHelper implements \ArrayAccess {
 
 	}
 
-    protected function instanceHeading( string $tag, string $key, string|array $attributes = [] ) {
+    protected function instanceHeading( string $tag, string $key, $attributes = [] ) {
         echo $this->_heading( $tag, $key, $attributes );
     }
 

@@ -61,6 +61,6 @@ trait WpEscapingTrait
      * @return mixed The value
      */
     #[\ReturnTypeWillChange]
-    abstract protected function getNested(string $key, string $separator = '.'): mixed;
+    abstract protected function getNested(string $key, string $separator = '.');
 
 }
