@@ -311,8 +311,14 @@ class WpTemplateHelper implements \ArrayAccess {
 		$atts = [];
 
 		foreach ( $arr as $att => $value ) {
-			$value  = \esc_attr( $value );
-			$atts[] = "{$att}=\"{$value}\"";
+			if ( $value === true ) {
+				// in html attributes only have to be present
+				// in other cases like autocomplete="yes", this should be handled in the array
+				$atts[] = "{$att}";
+			} else {
+				$value  = \esc_attr( $value );
+				$atts[] = "{$att}=\"{$value}\"";
+			}
 		}
 
 		return implode( " ", $atts );
