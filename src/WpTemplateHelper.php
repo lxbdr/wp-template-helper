@@ -392,6 +392,35 @@ class WpTemplateHelper implements \ArrayAccess {
         return static::staticMaybeAnchorTag($link, $atts, $alternative_tag);
     }
 
+    public static function blockWrapper($block_name, array $attributes = [])
+    {
+        return new class($block_name, $attributes) {
+            protected $block_name;
+            protected $attributes;
+
+            public function __construct($block_name, $attributes)
+            {
+                $this->block_name = $block_name;
+                $this->attributes = $attributes;
+            }
+
+            public function open()
+            {
+                ob_start();
+            }
+
+            public function close()
+            {
+                $data = json_encode($this->attributes);
+                $block_str = "<!-- wp:{$this->block_name} {$data} -->";
+                $block_str .= ob_get_clean();
+                $block_str .= "<!-- /wp:{$this->block_name} -->";
+                echo \do_blocks($block_str);
+            }
+        };
+
+    }
+
 	public function link( string $key, $text = null, $atts = '' ) {
 		$link = $this->getNested( $key );
 		if ( ! is_array( $link ) && ! is_string( $link ) ) {

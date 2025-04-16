@@ -34,7 +34,8 @@ $t = new \Lxbdr\WpTemplateHelper\WpTemplateHelper($data);
 
 # Data Access & Escaping
 
-The `WpTemplateHelper` class provides a convenient and secure way to handle nested data structures and output content safely in WordPress templates. It includes various methods for data access and escaping.
+The `WpTemplateHelper` class provides a convenient and secure way to handle nested data structures and output content
+safely in WordPress templates. It includes various methods for data access and escaping.
 
 ## Basic Data Access
 
@@ -57,6 +58,7 @@ $template = new WpTemplateHelper($data);
 ### Accessing Data
 
 #### Using `get()`
+
 Retrieves raw data from the specified key. Returns empty string if not found.
 
 ```php
@@ -65,6 +67,7 @@ $nonexistent = $template->get('user.foo'); // ""
 ```
 
 #### Using `has()`
+
 Checks if a key exists in the data structure. It uses `isset` under the hood and returns true for
 non-empty values.
 
@@ -75,6 +78,7 @@ if ($template->has('user.profile')) {
 ```
 
 #### Using `notEmpty()` / `empty()`
+
 Check if a value exists and is not empty.
 
 ```php
@@ -90,6 +94,7 @@ if ($template->empty('user.location')) {
 ### Raw Output
 
 #### Using `raw()`
+
 Outputs the raw value without any escaping. Use with caution!
 
 ```php
@@ -97,6 +102,7 @@ $template->raw('user.name'); // Outputs: John Doe
 ```
 
 #### Using `__invoke()`
+
 Shorthand for HTML-escaped output. Same as calling `html()`.
 
 ```php
@@ -157,6 +163,7 @@ $profileUrl = $template->_url('user.profile.url');
 ## Methods Overview
 
 ### Output Methods (Echo)
+
 - `html($key)` - Escape HTML entities
 - `safeHtml($key)` - Allow safe HTML tags
 - `url($key)` - Escape URLs
@@ -166,6 +173,7 @@ $profileUrl = $template->_url('user.profile.url');
 - `raw($key)` - Raw output (unescaped)
 
 ### Return Methods
+
 - `_html($key)` - Return escaped HTML
 - `_safeHtml($key)` - Return HTML with safe tags
 - `_url($key)` - Return escaped URL
@@ -175,6 +183,7 @@ $profileUrl = $template->_url('user.profile.url');
 - `get($key)` - Return raw value
 
 ### Data Access Methods
+
 - `has($key)` - Check key existence
 - `empty($key)` - Check if empty
 - `notEmpty($key)` - Check if not empty
@@ -182,6 +191,7 @@ $profileUrl = $template->_url('user.profile.url');
 ## Best Practices
 
 1. **Always Use Appropriate Escaping**
+
 ```php
 // Bad
 <a href="<?php $template->raw('link'); ?>">
@@ -191,12 +201,14 @@ $profileUrl = $template->_url('user.profile.url');
 ```
 
 2. **Use Dot Notation for Nested Data**
+
 ```php
 // Access deeply nested data
 $template->html('user.settings.preferences.theme');
 ```
 
 3. **Combine with HTML Structure**
+
 ```php
 // Clean and secure template code
 <div class="user-profile">
@@ -212,6 +224,7 @@ $template->html('user.settings.preferences.theme');
 ```
 
 4. **Use Return Methods for Variable Assignment**
+
 ```php
 $userName = $template->_html('user.name');
 $profileUrl = $template->_url('user.profile.url');
@@ -231,11 +244,13 @@ if ($template->has('user.profile') && $template->_url('user.profile.url')) {
 
 # Utility Methods
 
-The `WpTemplateHelper` class provides several utility methods for common template operations. These methods can be used both statically and as instance methods.
+The `WpTemplateHelper` class provides several utility methods for common template operations. These methods can be used
+both statically and as instance methods.
 
 ## Class Methods
 
 ### `clsx()` - Dynamic Class Names
+
 Combines class names based on conditions. Similar to the popular `classnames` JavaScript library.
 
 ```php
@@ -266,15 +281,17 @@ $template = new WpTemplateHelper([
 ```
 
 Output:
+
 ```html
 <!-- If $isLarge = true and $isEnabled = false -->
 <div class="btn btn--primary btn--large btn--disabled">
 
-<!-- With instance data -->
-<div class="component component--active component--large">
+    <!-- With instance data -->
+    <div class="component component--active component--large">
 ```
 
 ### `style()` - Inline Styles
+
 Generates inline CSS style strings. Handles conditional styles and value filtering.
 
 ```php
@@ -300,15 +317,17 @@ $template = new WpTemplateHelper([
 ```
 
 Output:
+
 ```html
 <!-- Static example with $textColor = '#000' and $isDisabled = true -->
 <div style="display: flex; margin-top: 20px; color: #000; background: #ccc;">
 
-<!-- Instance example -->
-<div style="padding: 2rem; color: #333; display: block;">
+    <!-- Instance example -->
+    <div style="padding: 2rem; color: #333; display: block;">
 ```
 
 ### `attributes()` - HTML Attributes
+
 Generates HTML attribute strings with proper escaping.
 
 ```php
@@ -336,12 +355,15 @@ $template = new WpTemplateHelper([
 ```
 
 Output:
+
 ```html
+
 <div id="main-content" data-user="John Smith" aria-label="Main content area">
-<div id="user-profile" data-user="John Doe" data-role="admin">
+    <div id="user-profile" data-user="John Doe" data-role="admin">
 ```
 
 ### `heading()` - Semantic Headings
+
 Creates semantic heading elements with attributes. Validates heading tags.
 
 ```php
@@ -367,6 +389,7 @@ $template = new WpTemplateHelper([
 ```
 
 Output:
+
 ```html
 <h1 class="main-title" id="welcome-heading">Welcome to our site</h1>
 <h1 class="dashboard-title">Welcome Back</h1>
@@ -374,6 +397,7 @@ Output:
 ```
 
 ### `maybeAnchorTag()` - Conditional Links
+
 Creates either an anchor tag or alternative element based on link presence.
 
 ```php
@@ -413,6 +437,7 @@ $tag = $template->maybeAnchorTag(
 ```
 
 Output:
+
 ```html
 <!-- With valid URL -->
 <a href="https://example.com" class="btn">Click me</a>
@@ -422,6 +447,7 @@ Output:
 ```
 
 ### `withLineBreaks()` - Line Break Formatting
+
 Joins array elements with line breaks, filtering empty values.
 
 ```php
@@ -452,6 +478,7 @@ $template = new WpTemplateHelper([
 ```
 
 Output:
+
 ```html
 First line<br/>Second line<br/>Third line
 
@@ -491,6 +518,7 @@ if (WpTemplateHelper::_clsx(['active' => $condition])) {
     - Use instance methods when working with template data
 
 3. **Combine with Data Access**
+
 ```php
 $template = new WpTemplateHelper($data);
 
@@ -507,10 +535,13 @@ $template = new WpTemplateHelper($data);
 
 ### ID Management
 
-The `WpTemplateHelper` provides methods for generating and managing unique IDs for HTML elements. Each instance maintains its own ID prefix to ensure uniqueness across multiple template instances.
+The `WpTemplateHelper` provides methods for generating and managing unique IDs for HTML elements. Each instance
+maintains its own ID prefix to ensure uniqueness across multiple template instances.
 
 ### `id()` / `_id()` - Prefixed IDs
-Generates a unique, prefixed ID for HTML elements. The prefix is automatically generated and helps prevent ID collisions when multiple instances of templates are used on the same page.
+
+Generates a unique, prefixed ID for HTML elements. The prefix is automatically generated and helps prevent ID collisions
+when multiple instances of templates are used on the same page.
 
 ```php
 // Instance usage
@@ -530,6 +561,7 @@ $navId = $template->_id('main-nav');
 ```
 
 Output:
+
 ```html
 <!-- Each instance has a unique prefix (e.g., "abc12-") -->
 <div id="abc12-header">
@@ -538,6 +570,7 @@ Output:
 ```
 
 ### `getIdPrefix()` - Current Prefix
+
 Retrieves the current ID prefix being used by the instance.
 
 ```php
@@ -556,6 +589,7 @@ $prefix = $template->getIdPrefix(); // e.g., "abc12-"
 ```
 
 ### `regenerateIdPrefix()` - New Prefix
+
 Forces generation of a new random ID prefix. Useful when you need to ensure a fresh set of IDs.
 
 ```php
@@ -572,6 +606,7 @@ echo $template->getIdPrefix(); // e.g., "xyz89-"
 ## Common Use Cases
 
 ### ARIA Relationships
+
 ```php
 $template = new WpTemplateHelper([
     'tabs' => [
@@ -603,6 +638,7 @@ $template = new WpTemplateHelper([
 ```
 
 ### Forms and Labels
+
 ```php
 $template = new WpTemplateHelper([
     'fields' => [
@@ -634,20 +670,23 @@ $template = new WpTemplateHelper([
 
 ## Best Practices
 
-The main reason to use this helper is to prevent duplicate IDs in templates which are used multiple times on the same page. This can cause issues with JavaScript, CSS, and accessibility.
+The main reason to use this helper is to prevent duplicate IDs in templates which are used multiple times on the same
+page. This can cause issues with JavaScript, CSS, and accessibility.
 Keep in mind that the ID prefix is unique to each instance of the helper and is randomly generated on instantiation.
-
 
 # Image functions
 
-WpTemplateHelper provides methods for handling and rendering various types of images in WordPress templates. It supports basic images, responsive images, and advanced image configurations with custom styling and layout options.
+WpTemplateHelper provides methods for handling and rendering various types of images in WordPress templates. It supports
+basic images, responsive images, and advanced image configurations with custom styling and layout options.
 
 ## Basic Image Methods
 
 ### `img($key, $size = 'full', $atts = '')`
+
 ### `_img($key, $size = 'full', $atts = '')`
 
-Renders/returns an HTML image element based on the provided key. Supports various input formats including image IDs, URLs, and arrays with metadata.
+Renders/returns an HTML image element based on the provided key. Supports various input formats including image IDs,
+URLs, and arrays with metadata.
 
 ```php
 // Using a WordPress image ID
@@ -681,6 +720,7 @@ $template->img('team_member');
 ## Responsive Image Methods
 
 ### `responsiveImg($key)`
+
 ### `_responsiveImg($key)`
 
 Generates HTML for a responsive image with multiple sources based on media queries.
@@ -719,6 +759,7 @@ $template->responsiveImg('hero');
 ## Advanced Image Methods
 
 ### `advancedImg($key)`
+
 ### `_advancedImg($key)`
 
 Renders an image with advanced configuration options including custom sizing, focal points, and object-fit properties.
@@ -754,22 +795,26 @@ $template->advancedImg('featured');
 ```
 
 ### Available Sizing Options
+
 - `width-full-height-full`: Image takes full width and height of container
 - `width-full-height-auto`: Image takes full width with auto height
 - `width-auto-height-full`: Image takes full height with auto width
 - `width-auto-height-auto`: Image dimensions are automatic
 
 ### Object Fit Options
+
 - `cover`: Image covers the entire container
 - `contain`: Image is contained within the container
 
 ### Display Options
+
 - `block`: Display as block element
 - `inline-block`: Display as inline-block element
 
 ## CSS Integration
 
-The trait provides a static method `getAdvancedImgCss()` that returns the necessary CSS for advanced image features. Include this CSS in your theme or plugin:
+The trait provides a static method `getAdvancedImgCss()` that returns the necessary CSS for advanced image features.
+Include this CSS in your theme or plugin:
 
 ```php
 // In your theme's functions.php or plugin file
@@ -786,7 +831,8 @@ add_action('wp_enqueue_scripts', function() {
 
 ## ACF Integration
 
-WpTemplateHelper provides a method to register field groups which contain all fields for using the advanced image feature.
+WpTemplateHelper provides a method to register field groups which contain all fields for using the advanced image
+feature.
 Call `registerAdvancedImgAcfFields()` to register the field groups with ACF.
 The field names are not prefixed and meant to be used in a clone field within a group.
 Important: The clone field should be a subfield of a group field otherwise it might not save correctly if multiple
@@ -853,6 +899,25 @@ $data = [
 ];
 $t = new \Lxbdr\WpTemplateHelper\WpTemplateHelper($data);
 $t->advancedImg('my_img');
+```
+
+## Block editor block wrapper
+
+Sometimes we want to use a block which uses nested blocks. This requires a call to `do_blocks` with the rendered content
+of the inner blocks and therefore some use of messy `ob_start` and `ob_get_clean` calls.
+Use `::blockWrapper($block_name, $attributes)` to get an instance of a block wrapper and call `open()` and `close()` on
+it.
+
+```php
+$block = \Lxbdr\WpTemplateHelper\WpTemplateHelper::blockWrapper('core/paragraph', [
+    'className' => 'my-class',
+    'style' => 'color: red'
+]);
+$block->open();
+?>
+<p>My content</p>
+<?php
+$block->close();
 ```
 
 ## Notes
