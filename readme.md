@@ -903,21 +903,38 @@ $t->advancedImg('my_img');
 
 ## Block editor block wrapper
 
-Sometimes we want to use a block which uses nested blocks. This requires a call to `do_blocks` with the rendered content
+Sometimes we want to use a dynamic block which uses nested blocks. This requires a call to `do_blocks` with the rendered
+content
 of the inner blocks and therefore some use of messy `ob_start` and `ob_get_clean` calls.
 Use `::blockWrapper($block_name, $attributes)` to get an instance of a block wrapper and call `open()` and `close()` on
 it.
 
+Warning: This only works for dynamic blocks as static blocks are rendered with JS during update time.
+
 ```php
-$block = \Lxbdr\WpTemplateHelper\WpTemplateHelper::blockWrapper('core/paragraph', [
-    'className' => 'my-class',
-    'style' => 'color: red'
+$block = \Lxbdr\WpTemplateHelper\WpTemplateHelper::blockWrapper('my-namespace/card', [
+    'title' => 'Hello World',
 ]);
 $block->open();
 ?>
-<p>My content</p>
+<p>My card content</p>
 <?php
 $block->close();
+```
+
+## Block editor block
+
+Builds a string and calls `do_blocks` to render a block.
+
+Warning: This only works for dynamic blocks as static blocks are rendered with JS during update time.
+
+`::_block($block_name, $attributes = [], $content = '')` and `::block($block_name, $attributes = [], $content = '')`
+
+```php
+\Lxbdr\WpTemplateHelper\WpTemplateHelper::block('my-namespace/copyright', [
+    'showCurrentYear' => true
+]);
+
 ```
 
 ## Notes

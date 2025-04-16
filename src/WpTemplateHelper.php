@@ -2,6 +2,7 @@
 
 namespace Lxbdr\WpTemplateHelper;
 
+use Lxbdr\WpTemplateHelper\Interfaces\WpTemplateHelperElement;
 use Lxbdr\WpTemplateHelper\Traits\ImgTrait;
 use Lxbdr\WpTemplateHelper\Traits\WpEscapingTrait;
 
@@ -392,9 +393,9 @@ class WpTemplateHelper implements \ArrayAccess {
         return static::staticMaybeAnchorTag($link, $atts, $alternative_tag);
     }
 
-    public static function blockWrapper($block_name, array $attributes = [])
+    public static function blockWrapper($block_name, array $attributes = []): WpTemplateHelperElement
     {
-        return new class($block_name, $attributes) {
+        return new class($block_name, $attributes) implements WpTemplateHelperElement {
             protected $block_name;
             protected $attributes;
 
@@ -418,7 +419,24 @@ class WpTemplateHelper implements \ArrayAccess {
                 echo \do_blocks($block_str);
             }
         };
+    }
 
+    public static function _block($block_name, array $attributes = [], $content = '')
+    {
+        $data = json_encode($attributes);
+        if (!empty($content)) {
+            $block_str = "<!-- wp:{$block_name} {$data} -->";
+            $block_str .= $content;
+            $block_str .= "<!-- /wp:{$block_name} -->";
+        } else {
+            $block_str = "<!-- wp:{$block_name} {$data} /-->";
+        }
+        return \do_blocks($block_str);
+    }
+
+    public static function block($block_name, array $attributes)
+    {
+        echo static::_block($block_name, $attributes);
     }
 
 	public function link( string $key, $text = null, $atts = '' ) {
