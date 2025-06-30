@@ -293,7 +293,7 @@ class WpTemplateHelper implements \ArrayAccess {
 
 		foreach ( $arr as $prop => $value ) {
 			// strict check empty string and false
-			if ( $value !== '' && $value !== false ) {
+			if ( $value !== '' && $value !== false && $value !== null ) {
 				$styles[] = "{$prop}: {$value};";
 			}
 		}
