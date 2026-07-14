@@ -42,9 +42,8 @@ trait AdvancedImgACFTrait
                     'name' => 'media_query',
                     'type' => 'text',
                     'required' => 1,
-                    'min' => 0,
-                    'append' => 'px',
-                    'instructions' => __('Enter breakpoint width in pixels', 'lxbdr'),
+                    'placeholder' => '(min-width: 990px)',
+                    'instructions' => __('Enter a full CSS media query — used verbatim as the source\'s "media" attribute, e.g. (min-width: 990px) or (max-width: 767px).', 'lxbdr'),
                 ],
                 [
                     'key' => 'lx_field_advanced_img_responsive_img_id',

@@ -397,10 +397,63 @@ trait ImgTrait
             <?php foreach ($t->get('sources_tags') as $source_tag): ?>
                 <?php echo $source_tag; ?>
             <?php endforeach; ?>
-            <?php $t->img('base_img'); ?>
+            <?php echo $this->getResponsiveBaseImgTag($t->get('base_img')); ?>
         </picture>
         <?php
         return ob_get_clean();
+    }
+
+    /**
+     * Renders the <picture>'s fallback <img> for the base image with srcset and
+     * sizes, so that when the browser falls back to it (no <source> matches, or
+     * no <picture>/srcset support at all) it still loads an appropriately sized
+     * file instead of the largest one.
+     *
+     * The base image may be an attachment ID, an ACF image array (return_format
+     * "array", exposing an "ID"), or a bare URL. When an attachment ID can be
+     * resolved, srcset/sizes are computed from its metadata (mirroring how the
+     * <source> tags are built); otherwise it degrades to a plain <img>.
+     *
+     * @param int|string|array $base_img The base image value
+     * @param string|array $size The desired image size (default: 'full')
+     * @return string The generated <img> HTML
+     */
+    protected function getResponsiveBaseImgTag($base_img, $size = 'full'): string
+    {
+        // Resolve an attachment ID from the shapes base_img can take.
+        $attachment_id = null;
+        if (is_numeric($base_img)) {
+            $attachment_id = (int) $base_img;
+        } elseif (is_array($base_img)) {
+            $attachment_id = (int) ($base_img['ID'] ?? $base_img['id'] ?? 0) ?: null;
+        }
+
+        if ($attachment_id) {
+            $image = \wp_get_attachment_image_src($attachment_id, $size);
+            if ($image) {
+                $image_meta = \wp_get_attachment_metadata($attachment_id);
+                list($src, $width, $height) = $image;
+                $size_array = [\absint($width), \absint($height)];
+                $srcset = \wp_calculate_image_srcset($size_array, $src, $image_meta, $attachment_id);
+                $sizes = \wp_calculate_image_sizes($size_array, $src, $image_meta, $attachment_id);
+
+                // Pass srcset/sizes explicitly so they are emitted even if they
+                // would otherwise be filtered off wp_get_attachment_image().
+                $attr = [];
+                if ($srcset) {
+                    $attr['srcset'] = $srcset;
+                    if ($sizes) {
+                        $attr['sizes'] = $sizes;
+                    }
+                }
+
+                return \wp_get_attachment_image($attachment_id, $size, false, $attr);
+            }
+        }
+
+        // Fallback: URL or array without a resolvable attachment ID.
+        $t = new static(['base_img' => $base_img]);
+        return $t->_img('base_img', $size);
     }
 
     /**
